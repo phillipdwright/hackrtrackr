@@ -1,7 +1,11 @@
 from flask import Flask
 from flask import g, render_template, request
 import os
-from helpers import read_in_json_file, keyword_check_comments_np_array, DATE_LIST_STR
+from helpers import read_in_json_file, keyword_check_comments_np_array, DATE_LIST
+from bokeh.embed import components
+from bokeh.plotting import figure
+from bokeh.resources import INLINE
+from bokeh.util.string import encode_utf8
 
 app = Flask(__name__)
 
@@ -17,7 +21,21 @@ def hello_world():
     if request.method == 'POST':
         keyword = request.form["keyword"]
         counts = keyword_check_comments_np_array(g.data, keyword)
-        return render_template('index.html', DATE_LIST_STR = DATE_LIST_STR, counts = counts)
+        p1 = figure(x_axis_type = "datetime")
+        p1.line(DATE_LIST, counts)
+        js_resources = INLINE.render_js()
+        css_resources = INLINE.render_css()
+        script, div = components(p1, INLINE)
+        html = render_template(
+            'index.html',
+            keyword = keyword,
+            plot_script=script,
+            plot_div=div,
+            js_resources=js_resources,
+            css_resources=css_resources,
+        )
+        return html
+        #return render_template('index.html', DATE_LIST_STR = DATE_LIST_STR, counts = counts)
     return render_template('index.html')
     
 if __name__ == '__main__':
