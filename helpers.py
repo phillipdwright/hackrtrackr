@@ -5,6 +5,18 @@ import numpy as np
 import calendar
 import re
 
+# taken from here selecting 12, qualitative colors: http://colorbrewer2.org/
+COLORS = (
+        (57,106,177),
+        (218,124,48),
+        (62,150,81),
+        (204,37,41),
+        (83,81,84),
+        (107,76,154),
+        (146,36,40),
+        (148,139,61)
+    )
+
 def get_date_list(date):
     '''
     Given a start date (datetime.date)

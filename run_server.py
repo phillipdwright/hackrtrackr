@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import g, render_template, request
 import os
-from helpers import read_in_json_file, keyword_check_comments_np_array, DATE_LIST, number_comments_per_month
+from helpers import read_in_json_file, keyword_check_comments_np_array, DATE_LIST, number_comments_per_month, COLORS, np
 from bokeh.embed import components
 from bokeh.plotting import figure
 from bokeh.resources import INLINE
@@ -24,24 +24,26 @@ def hello_world():
         keywords = keywords.split(',')
         total_counts_array = number_comments_per_month(g.comments)
         fig = figure(x_axis_type = "datetime")
-        colors = ('red', 'blue', 'green', 'black')
         
         # get counts for the keyword, normalize by total counts
-        for keyword, color in zip(keywords, colors):
+        for keyword, color in zip(keywords, COLORS):
             counts = keyword_check_comments_np_array(g.comments, keyword)
             counts /= total_counts_array
-            #print counts
-            fig.line(DATE_LIST, counts, color=color, legend=keyword)
+            fig.circle(DATE_LIST, counts, color=color, alpha=0.2, size=4)
+            window_size = 10
+            window=np.ones(window_size)/float(window_size)
+            counts_avg = np.convolve(counts, window, 'same')
+            fig.line(DATE_LIST, counts_avg, color=color, legend=keyword)
+            #fig.line(DATE_LIST, counts, color=color, legend=keyword)
         
-        # some bokeh code I based of this example:
+        # some bokeh code I based off this example:
         # https://github.com/bokeh/bokeh/tree/master/examples/embed/simple
-        
         js_resources = INLINE.render_js()
         css_resources = INLINE.render_css()
         script, div = components(fig, INLINE)
         html = render_template(
             'index.html',
-            keywords = ' '.join(keywords),
+            keywords = ','.join(keywords),
             plot_script=script,
             plot_div=div,
             js_resources=js_resources,
