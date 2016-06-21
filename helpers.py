@@ -68,3 +68,14 @@ def keyword_check_comments_np_array(comments, keyword, suffix_flag=False, case_f
             index = DATE_INDEX[comment['created']]
             counts[index] += 1
     return counts
+    
+def number_comments_per_month(comments):
+    '''
+    Returns np array of total # of comments per month
+    '''
+    counts = np.zeros(len(DATE_LIST))
+    
+    for comment in comments:
+        index = DATE_INDEX[comment['created']]
+        counts[index] += 1
+    return counts
