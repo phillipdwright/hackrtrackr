@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HackrTrackr</title>
+    </head>
+    
+    <body>
+    
+        <form role="form" action="" method="POST">
+		    <label for="keyword">keyword</label>
+		    <input class="form-control" name="keyword" placeholder="python">
+		    <button type="submit" class="btn btn-default">Submit</button>
+		</form>
+		
+		{% if counts is defined %}
+		    {% for index in range(DATE_LIST_STR|length) %}
+		        {{ DATE_LIST_STR[index] }}
+		        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		        {{ counts[index] }}
+		        <br>
+		    {% endfor %}
+		{% endif %}
+    </body>
+</html>

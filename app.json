@@ -1,8 +1,8 @@
 {
-  "name": "Python on Heroku example",
-  "description": "A barebones Python app, which can easily be deployed to Heroku.",
+  "name": "HackrTrackr Test Deploy",
+  "description": "Test Heroku deployment for the HackrTrackr project in Rmotr's Advanced Python Demo-day series",
   "image": "heroku/python",
-  "repository": "https://github.com/heroku/python-getting-started",
-  "keywords": ["python", "django" ],
+  "repository": "https://github.com/phillipdwright/hackrtrackr",
+  "keywords": ["python", "flask" ],
   "addons": [ "heroku-postgresql" ]
 }
