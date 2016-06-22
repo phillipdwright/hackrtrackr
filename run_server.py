@@ -16,7 +16,7 @@ def before_request():
     # we could put stuff here about checking if json database is up-to-date
 
 @app.route('/', methods = ['GET','POST'])
-def hello_world():
+def index():
 
     if request.method == 'POST':
         keywords = request.form["keywords"]
@@ -29,14 +29,16 @@ def hello_world():
         for keyword, color in zip(keywords, COLORS):
             counts = keyword_check_comments_np_array(g.comments, keyword)
             counts /= total_counts_array
+            print counts
             fig.circle(DATE_LIST, counts, color=color, alpha=0.2, size=4)
-            window_size = 10
+            window_size = 3
             window=np.ones(window_size)/float(window_size)
             counts_avg = np.convolve(counts, window, 'same')
-            fig.line(DATE_LIST, counts_avg, color=color, legend=keyword)
-            #fig.line(DATE_LIST, counts, color=color, legend=keyword)
+            print counts_avg
+            # lose the first and last elements due to boundary effect
+            fig.line(DATE_LIST[1:-1], counts_avg[1:-1], color=color, legend=keyword)
         
-        # some bokeh code I based off this example:
+        # some bokeh code I took off this example:
         # https://github.com/bokeh/bokeh/tree/master/examples/embed/simple
         js_resources = INLINE.render_js()
         css_resources = INLINE.render_css()

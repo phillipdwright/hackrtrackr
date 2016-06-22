@@ -65,7 +65,7 @@ def keyword_check_comments_np_array(comments, keyword, suffix_flag=False, case_f
     return a numpy array of counts in order of dates
     '''
     counts = np.zeros(len(DATE_LIST))
-    
+    keyword = re.escape(keyword) # escape special regex characters
     if suffix_flag:
         keyword += '\W' # so it can't be part of a larger word
     

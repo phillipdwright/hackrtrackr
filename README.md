@@ -1,8 +1,6 @@
-# python-getting-started
+# HackrTrackr
 
-A barebones Python app, which can easily be deployed to Heroku.
-
-This application supports the [Getting Started with Python on Heroku](https://devcenter.heroku.com/articles/getting-started-with-python) article - check it out.
+Hacker News is a social news site focused on computer science and entrepreneurship. Since 2011 there have been monthly “Who is Hiring” threads where hundreds of companies post descriptions of job openings. HackrTrackr allows a user to access the entire history of these job posts and to filter for just the jobs that match their interest. HackrTrackr provides an interactive visualization to see how job trends have changed over time. HackrTrackr also integrates company reviews from Glassdoor to enhance the user’s job search.
 
 ## Running Locally
 
