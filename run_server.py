@@ -1,6 +1,7 @@
 from flask import Flask
-from flask import g, render_template, request
+from flask import g, render_template, render_template_string, request
 import os
+import re
 from helpers import keyword_check_comments_np_array, \
 DATE_LIST, number_comments_per_month, get_matching_comments, COLORS, np
 from hn_search_api_helpers import COMMENTS_FILE, load_json_file
@@ -8,8 +9,13 @@ from bokeh.embed import components
 from bokeh.plotting import figure
 from bokeh.resources import INLINE
 from bokeh.util.string import encode_utf8
+from bokeh.models import NumeralTickFormatter
 
 app = Flask(__name__)
+
+# @app.context_processor
+# def inject_renderer():
+#     return dict(render_template_string=render_template_string)
 
 @app.before_request
 def before_request():
@@ -25,7 +31,8 @@ def index():
         
         # Get the entered keywords
         keywords = request.form["keywords"]
-        keywords = [keyword.strip() for keyword in keywords.split(',')]
+        # keywords = [keyword.strip() for keyword in keywords.split(',')]
+        keywords = [word for word in re.split('\W+', keywords) if len(word) > 0]
         
         # Build an array of total comments
         total_counts_array = number_comments_per_month(g.comments)
@@ -37,7 +44,16 @@ def index():
             #  released yet:
             # responsive = 'box', 
             responsive = True,
+            toolbar_location = None
         )
+        
+        # Formatting features that yield a pretty chart
+        fig.xaxis.axis_line_color = fig.yaxis.axis_line_color = None
+        fig.yaxis.minor_tick_line_color = fig.outline_line_color = None
+        fig.xgrid.grid_line_color = fig.ygrid.grid_line_color = '#e7e7e7'
+        fig.xaxis.major_tick_line_color = fig.yaxis.major_tick_line_color = '#e7e7e7'
+        fig.legend.border_line_color = '#e7e7e7'
+        fig.yaxis[0].formatter = NumeralTickFormatter(format="0%")
         
         # Repeat the color list as needed; this depends on Py2 integer division
         # COLORS = COLORS * ((len(keywords)-1) / len(COLORS) + 1)

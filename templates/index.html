@@ -68,6 +68,16 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
+                    
+                    {% if keywords is defined %}
+                    <li>
+                        <a class="page-scroll" href="#plot">Plot</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#posts">Posts</a>
+                    </li>
+                    {% endif %}
+                    
                     <li>
                         <a class="page-scroll" href="#contact">About</a>
                     </li>
@@ -171,32 +181,36 @@
                 <div class="col-lg-3 col-md-6 text-center">
                     <div class="service-box">
                         <!--a href="https://news.ycombinator.com/item?id={{ job['id'] }}"><img src="{{ url_for('static', filename='img/logos/43242.png') }}" /></a-->
-                        <a data-toggle="modal" data-target="#{{ job['id'] }}"><img src="{{ url_for('static', filename='img/logos/43242.png') }}" /></a>
+                        <a data-toggle="modal" data-target="#{{ job['id'] }}">
+                            <img src="{{ url_for('static', filename='img/logos/hn_logo.png') }}" height="70" width="70"/>
+                        
+                            <p>
+                                <a href="https://www.glassdoor.com/Reviews/Hulu-Reviews-E43242.htm">
+                                    <i class="fa fa-2x fa-star text-primary sr-icons"></i>
+                                    <i class="fa fa-2x fa-star text-primary sr-icons"></i>
+                                    <i class="fa fa-2x fa-star text-primary sr-icons"></i>
+                                    <i class="fa fa-2x fa-star-half-o text-primary sr-icons"></i>
+                                    <i class="fa fa-2x fa-star-o text-primary sr-icons"></i>
+                                </a>
+                            </p>
+                            <!--i class="fa fa-4x fa-diamond text-primary sr-icons"></i-->
+                            {% if name in job %}<h3>{{ job['name'] }}</h3>{% endif %}
+                            {% if ratings in job %}{% endif %}
+                            <p class="text-muted">{{ job['snippet'] }}</p>
+                        </a>
                         
                         <div class="modal fade" id="{{ job['id'] }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                           <div class="modal-dialog" role="document">
                             <div class="modal-content">
                               <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">Jop Posting #{{ job['id'] }}</h4>
+                                <h4 class="modal-title" id="myModalLabel">Job Posting #{{ job['id'] }}</h4>
                               </div>
                               <div class="modal-body">
                         
-                        <p>
-                            <a href="https://www.glassdoor.com/Reviews/Hulu-Reviews-E43242.htm">
-                                <i class="fa fa-2x fa-star text-primary sr-icons"></i>
-                                <i class="fa fa-2x fa-star text-primary sr-icons"></i>
-                                <i class="fa fa-2x fa-star text-primary sr-icons"></i>
-                                <i class="fa fa-2x fa-star-half-o text-primary sr-icons"></i>
-                                <i class="fa fa-2x fa-star-o text-primary sr-icons"></i>
-                            </a>
-                        </p>
-                        <!--i class="fa fa-4x fa-diamond text-primary sr-icons"></i-->
-                        {% if name in job %}<h3>{{ job['name'] }}</h3>{% endif %}
-                        {% if ratings in job %}{% endif %}
-                        <p class="text-muted">{{ job['snippet'] }}</p>
+                                {{ job['text']|safe }}
                         
-                            </div>
+                              </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                 <button type="button" class="btn btn-primary">Save changes</button>
@@ -234,8 +248,14 @@
     </section -->
     
     {% if jobs is defined %}
-    <a href='https://www.glassdoor.com/index.htm'>powered by <img src='https://www.glassdoor.com/static/img/api/glassdoor_logo_80.png' title='Job Search' /></a><br>
-    <a href='https://www.algolia.com/'>powered by <img src='http://chrisronzio.com/wp-content/uploads/2014/12/AlgoliaLogoBlack.jpg' title='Not Sure' height='18'/></a>
+    powered by 
+    <a href='https://www.glassdoor.com/index.htm'>
+        <img src='https://www.glassdoor.com/static/img/api/glassdoor_logo_80.png' title='Job Search' />
+    </a>
+    and
+    <a href='https://www.algolia.com/'>
+        <img src='http://chrisronzio.com/wp-content/uploads/2014/12/AlgoliaLogoBlack.jpg' title='Algolia' height='18'/>
+    </a>
     {% endif %}
 
     <!-- jQuery -->
