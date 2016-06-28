@@ -1,24 +1,265 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>HackrTrackr</title>
-    </head>
-    
-    <body>
-    
-        <form role="form" action="" method="POST">
-		    <label for="keywords">keywords</label>
-		    <input class="form-control" name="keywords" placeholder="kw1,kw2">
-		    <button type="submit" class="btn btn-default">Submit</button>
-		</form>
-		
-		{% if keywords is defined %}
-			{{keywords}}
-			{{ js_resources|indent(4)|safe }}
-			{{ css_resources|indent(4)|safe }}
-    		{{ plot_script|indent(4)|safe }}
-    		{{ plot_div|indent(4)|safe }}
+<html lang="en">
 
-		{% endif %}
-    </body>
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>HackrTrackr</title>
+
+    <!-- Bootstrap Core CSS -->
+    <!-- link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" type="text/css">
+
+    <!-- Custom Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+    <!-- link rel="stylesheet" href="font-awesome/css/font-awesome.min.css" type="text/css" -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}" type="text/css">
+
+    <!-- Plugin CSS -->
+    <!-- link rel="stylesheet" href="css/magnific-popup.css" type="text/css" -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}" type="text/css">
+
+    <!-- Custom CSS -->
+    <!-- link rel="stylesheet" href="css/creative.css" type="text/css" -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/creative.css') }}" type="text/css">
+    
+    <!-- Bokeh Embed code -->
+    {% if keywords is defined %}
+    
+        {{ js_resources|indent(4)|safe }}
+        {{ css_resources|indent(4)|safe }}
+        {{ plot_script|indent(4)|safe }}
+    
+    {% endif %}
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top">
+
+    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">HackrTrackr</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a class="page-scroll" href="#contact">About</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="https://github.com/phillipdwright/hackrtrackr">Source</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+    <header>
+        <div class="header-content">
+            <div class="header-content-inner">
+                <h1>The Right Coding Job Is Out There</h1>
+                <hr>
+                <!-- p>Start Bootstrap can help you build better websites using the Bootstrap CSS framework! Just download your template and start going, no strings attached!</p -->
+                <!-- a href="#about" class="btn btn-primary btn-xl page-scroll">Find Out More</a -->
+                <form id="search-form" class="form-inline" role="form" action="#plot" method="POST">
+                    <div class="input-group">
+            		    <input type="text" class="form-control search-form search-input" name="keywords" placeholder="Search job keywords">
+            		    <span class="input-group-btn">
+            		        <button type="submit" class="btn btn-primary search-btn" data-target="#search-form" name="q">
+        		                <i class="fa fa-search"><!--FONT AWESOME font @ "http://fortawesome.github.io/Font-Awesome/" --></i>
+							</button>
+						</span>
+        		    </div>
+        		</form>
+            </div>
+        </div>
+    </header>
+
+    <!-- section class="bg-primary" id="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <h2 class="section-heading">We've got what you need!</h2>
+                    <hr class="light">
+                    <p class="text-faded">Start Bootstrap has everything you need to get your new website up and running in no time! All of the templates and themes on Start Bootstrap are open source, free to download, and easy to use. No strings attached!</p>
+                    <a href="#plot" class="page-scroll btn btn-default btn-xl sr-button">Get Started!</a>
+                </div>
+            </div>
+        </div>
+    </section -->
+
+    
+    {% if keywords is defined %}
+    <section id="plot">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">History of Posts for {{ keywords }} Jobs</h2>
+                    <hr class="primary">
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            
+            <div class="row">
+                {{ plot_div|indent(4)|safe }}
+            </div>
+            
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- <section class="no-padding" id="portfolio">
+        <div class="container-fluid">
+            <div class="row no-gutter popup-gallery">
+                
+                
+                
+            </div>
+        </div>
+    </section>
+
+    <aside class="bg-dark">
+        <div class="container text-center">
+            <div class="call-to-action">
+                <h2>Free Download at Start Bootstrap!</h2>
+                <a href="http://startbootstrap.com/template-overviews/creative/" class="btn btn-default btn-xl sr-button">Download Now!</a>
+            </div>
+        </div>
+    </aside> -->
+    
+    {% if jobs is defined %}
+    <section id="posts">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">Job Posts</h2>
+                    <hr class="primary">
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                {% for job in jobs %}
+                <div class="col-lg-3 col-md-6 text-center">
+                    <div class="service-box">
+                        <!--a href="https://news.ycombinator.com/item?id={{ job['id'] }}"><img src="{{ url_for('static', filename='img/logos/43242.png') }}" /></a-->
+                        <a data-toggle="modal" data-target="#{{ job['id'] }}"><img src="{{ url_for('static', filename='img/logos/43242.png') }}" /></a>
+                        
+                        <div class="modal fade" id="{{ job['id'] }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Jop Posting #{{ job['id'] }}</h4>
+                              </div>
+                              <div class="modal-body">
+                        
+                        <p>
+                            <a href="https://www.glassdoor.com/Reviews/Hulu-Reviews-E43242.htm">
+                                <i class="fa fa-2x fa-star text-primary sr-icons"></i>
+                                <i class="fa fa-2x fa-star text-primary sr-icons"></i>
+                                <i class="fa fa-2x fa-star text-primary sr-icons"></i>
+                                <i class="fa fa-2x fa-star-half-o text-primary sr-icons"></i>
+                                <i class="fa fa-2x fa-star-o text-primary sr-icons"></i>
+                            </a>
+                        </p>
+                        <!--i class="fa fa-4x fa-diamond text-primary sr-icons"></i-->
+                        {% if name in job %}<h3>{{ job['name'] }}</h3>{% endif %}
+                        {% if ratings in job %}{% endif %}
+                        <p class="text-muted">{{ job['snippet'] }}</p>
+                        
+                            </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- section id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <h2 class="section-heading">Let's Get In Touch!</h2>
+                    <hr class="primary">
+                    <p>Ready to start your next project with us? That's great! Give us a call or send us an email and we will get back to you as soon as possible!</p>
+                </div>
+                <div class="col-lg-4 col-lg-offset-2 text-center">
+                    <i class="fa fa-phone fa-3x sr-contact"></i>
+                    <p>123-456-6789</p>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <i class="fa fa-envelope-o fa-3x sr-contact"></i>
+                    <p><a href="mailto:your-email@your-domain.com">feedback@startbootstrap.com</a></p>
+                </div>
+            </div>
+        </div>
+    </section -->
+    
+    {% if jobs is defined %}
+    <a href='https://www.glassdoor.com/index.htm'>powered by <img src='https://www.glassdoor.com/static/img/api/glassdoor_logo_80.png' title='Job Search' /></a><br>
+    <a href='https://www.algolia.com/'>powered by <img src='http://chrisronzio.com/wp-content/uploads/2014/12/AlgoliaLogoBlack.jpg' title='Not Sure' height='18'/></a>
+    {% endif %}
+
+    <!-- jQuery -->
+    <!-- script src="js/jquery.js"></script -->
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <!-- script src="js/bootstrap.min.js"></script -->
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="{{ url_for('static', filename='js/scrollreveal.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.easing.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.fittext.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.magnific-popup.min.js') }}"></script>
+    <!-- script src="js/scrollreveal.min.js"></script>
+    <script src="js/jquery.easing.min.js"></script>
+    <script src="js/jquery.fittext.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script -->
+
+    <!-- Custom Theme JavaScript -->
+    <!-- script src="js/creative.js"></script -->
+    <script src="{{ url_for('static', filename='js/creative.js') }}"></script>
+
+</body>
+
 </html>
