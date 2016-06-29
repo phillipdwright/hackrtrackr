@@ -1,16 +1,22 @@
-from flask import Flask
-from flask import g, render_template, render_template_string, request
+from flask import Flask, g, render_template, render_template_string, request
+
 import os
 import re
-from helpers import keyword_check_comments_np_array, \
-DATE_LIST, number_comments_per_month, get_matching_comments, COLORS, np
-from hn_search_api_helpers import COMMENTS_FILE, load_json_file
+import sqlite3
+
 from bokeh.embed import components
 from bokeh.plotting import figure
 from bokeh.resources import INLINE
 from bokeh.util.string import encode_utf8
 from bokeh.models import NumeralTickFormatter
 
+from helpers import \
+DATE_LIST, number_comments_per_month, get_matching_comments, COLORS, np, \
+get_matching_comments_db, keyword_check_db, plot_dots_and_line, make_fig
+from hn_search_api_helpers import COMMENTS_FILE, CACHED_COUNTS_FILE, load_json_file
+
+
+DATABASE = 'test_db/testDB12.db' # maybe put this in config file
 app = Flask(__name__)
 
 # @app.context_processor
@@ -19,9 +25,7 @@ app = Flask(__name__)
 
 @app.before_request
 def before_request():
-    # right now reading in json file but replace this with database
-    g.comments = load_json_file(COMMENTS_FILE)
-    
+    g.db = sqlite3.connect(DATABASE)
     # we could put stuff here about checking if json database is up-to-date
 
 @app.route('/', methods = ['GET','POST'])
@@ -29,20 +33,21 @@ def index():
 
     if request.method == 'POST':
         
+        # cached_counts_json = load_json_file(CACHED_COUNTS_FILE) # has both keyword counts and total counts
+        # cached_counts = {}
+        # for entry in cached_counts_json:
+        #     cached_counts[entry['keyword']] = entry['counts']
+        
         # Get the entered keywords
         keywords = request.form["keywords"]
-        # keywords = [keyword.strip() for keyword in keywords.split(',')]
-        keywords = [word for word in re.split('\W+', keywords) if len(word) > 0]
-        
-        # Build an array of total comments
-        total_counts_array = number_comments_per_month(g.comments)
+        keywords = [keyword.strip() for keyword in keywords.split(',') if len(keyword) > 0]
+        keywords = keywords[:len(COLORS)] # prevent too many keywords
+        # keywords = [keyword.strip() for keyword in keywords.split(',') if len(keyword) > 0]
+        # keywords = keywords[:len(COLORS)] # prevent too many keywords
+        fig = make_fig(keywords)
+        '''
         fig = figure(
             x_axis_type = "datetime",
-            # plot_height = 600,
-            # I'd like to use this responsive option, to scale the plot better,
-            #  but it's only available in version 0.12, which hasn't been
-            #  released yet:
-            # responsive = 'box', 
             responsive = True,
             toolbar_location = None
         )
@@ -58,25 +63,58 @@ def index():
         # Repeat the color list as needed; this depends on Py2 integer division
         # COLORS = COLORS * ((len(keywords)-1) / len(COLORS) + 1)
         
+        # if no keywords get total posts per month
+        # should move redundant code into a new function...
+        if not keywords:
+            fig.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+            counts = np.array(cached_counts['Total Counts'])
+            fig = plot_dots_and_line(fig, counts, 'All', COLORS[0])
+            
+            # fig.circle(DATE_LIST, counts, color=COLORS[0], alpha=0.2, size=4)
+            # window_size = 3
+            # window=np.ones(window_size)/float(window_size)
+            # counts_avg = np.convolve(counts, window, 'same')
+            
+            # # lose the first and last elements due to boundary effect
+            # fig.line(
+            #     DATE_LIST[1:-1],
+            #     counts_avg[1:-1],
+            #     line_width=4,
+            #     color=COLORS[0],
+            #     legend=keyword.title()
+            # )
+            
         # get counts for the keyword, normalize by total counts
         for keyword, color in zip(keywords, COLORS):
-            counts = keyword_check_comments_np_array(g.comments, keyword)
-            counts /= total_counts_array
+            # would it be faster to check all keywords for each comment
+            # instead of doing one keyword at a time through all comments?
+            # counts = keyword_check_comments_np_array(g.comments, keyword)
+            # counts /= number_comments_per_month(g.comments)
+            cached_keywords = cached_counts.keys()
+            cached_keywords = [i.lower() for i in cached_keywords]
+            
+            if keyword.lower() in cached_keywords:
+                print 'got cached counts for {}'.format(keyword)
+                counts = np.array(cached_counts[keyword.lower()])
+            else:
+                counts = keyword_check_db(g.db, keyword)
+                #counts = keyword_check_comments_np_array(g.comments, keyword)
+                counts /= np.array(cached_counts['Total Counts'])
+            fig = plot_dots_and_line(fig, counts, keyword, color)
+            # fig.circle(DATE_LIST, counts, color=color, alpha=0.2, size=4)
+            # window_size = 3
+            # window=np.ones(window_size)/float(window_size)
+            # counts_avg = np.convolve(counts, window, 'same')
 
-            fig.circle(DATE_LIST, counts, color=color, alpha=0.2, size=4)
-            window_size = 3
-            window=np.ones(window_size)/float(window_size)
-            counts_avg = np.convolve(counts, window, 'same')
-
-            # lose the first and last elements due to boundary effect
-            fig.line(
-                DATE_LIST[1:-1],
-                counts_avg[1:-1],
-                line_width=4,
-                color=color,
-                legend=keyword.title()
-            )
-        
+            # # lose the first and last elements due to boundary effect
+            # fig.line(
+            #     DATE_LIST[1:-1],
+            #     counts_avg[1:-1],
+            #     line_width=4,
+            #     color=color,
+            #     legend=keyword.title()
+            # )
+        '''
         # Build the bokeh plot resources
         # https://github.com/bokeh/bokeh/tree/master/examples/embed/simple
         js_resources = INLINE.render_js()
@@ -84,8 +122,10 @@ def index():
         script, div = components(fig, INLINE)
         
         # Get recent comments matching the keywords
-        recent_comments = get_matching_comments(g.comments, keywords)
-        
+        recent_comments = get_matching_comments_db(g.db, keywords)
+        if not keywords:
+            keywords = ['All']
+        print 'keywords = ',keywords
         # Build the web page
         html = render_template(
             'index.html',

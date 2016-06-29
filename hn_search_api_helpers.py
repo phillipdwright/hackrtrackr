@@ -9,6 +9,8 @@ import dateutil.parser
 DATA_PATH = 'data/'
 THREADS_FILE = os.path.join(DATA_PATH, 'threads.json')
 COMMENTS_FILE = os.path.join(DATA_PATH, 'comments.json')
+#COMMENTS_FILE = os.path.join(DATA_PATH, 'comments_db.json')
+CACHED_COUNTS_FILE = os.path.join(DATA_PATH, 'keyword_counts_table.json')
 
 # Next 4 functions are general json I/O stuff
 def json_date_to_string(l):

@@ -112,20 +112,8 @@
         </div>
     </header>
 
-    <!-- section class="bg-primary" id="about">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 text-center">
-                    <h2 class="section-heading">We've got what you need!</h2>
-                    <hr class="light">
-                    <p class="text-faded">Start Bootstrap has everything you need to get your new website up and running in no time! All of the templates and themes on Start Bootstrap are open source, free to download, and easy to use. No strings attached!</p>
-                    <a href="#plot" class="page-scroll btn btn-default btn-xl sr-button">Get Started!</a>
-                </div>
-            </div>
-        </div>
-    </section -->
-
     
+    <!-- PLOT SECTION -->
     {% if keywords is defined %}
     <section id="plot">
         <div class="container">
@@ -146,25 +134,8 @@
     </section>
     {% endif %}
 
-    <!-- <section class="no-padding" id="portfolio">
-        <div class="container-fluid">
-            <div class="row no-gutter popup-gallery">
-                
-                
-                
-            </div>
-        </div>
-    </section>
-
-    <aside class="bg-dark">
-        <div class="container text-center">
-            <div class="call-to-action">
-                <h2>Free Download at Start Bootstrap!</h2>
-                <a href="http://startbootstrap.com/template-overviews/creative/" class="btn btn-default btn-xl sr-button">Download Now!</a>
-            </div>
-        </div>
-    </aside> -->
     
+    <!-- JOB POSTS SECTION -->
     {% if jobs is defined %}
     <section id="posts">
         <div class="container">
@@ -180,10 +151,11 @@
                 {% for job in jobs %}
                 <div class="col-lg-3 col-md-6 text-center">
                     <div class="service-box">
-                        <!--a href="https://news.ycombinator.com/item?id={{ job['id'] }}"><img src="{{ url_for('static', filename='img/logos/43242.png') }}" /></a-->
+                        
+                        <!-- MINI DISPLAY -->
                         <a data-toggle="modal" data-target="#{{ job['id'] }}">
                             <img src="{{ url_for('static', filename='img/logos/hn_logo.png') }}" height="70" width="70"/>
-                        
+                            
                             <p>
                                 <a href="https://www.glassdoor.com/Reviews/Hulu-Reviews-E43242.htm">
                                     <i class="fa fa-2x fa-star text-primary sr-icons"></i>
@@ -193,14 +165,15 @@
                                     <i class="fa fa-2x fa-star-o text-primary sr-icons"></i>
                                 </a>
                             </p>
-                            <!--i class="fa fa-4x fa-diamond text-primary sr-icons"></i-->
+                            
                             {% if name in job %}<h3>{{ job['name'] }}</h3>{% endif %}
                             {% if ratings in job %}{% endif %}
                             <p class="text-muted">{{ job['snippet'] }}</p>
                         </a>
                         
-                        <div class="modal fade" id="{{ job['id'] }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                          <div class="modal-dialog" role="document">
+                        <!-- MODAL -->
+                        <div class="modal fade" id="{{ job['id'] }}" tabindex="-1" role="dialog" aria-labelledby="Job Post {{ job['id'] }}">
+                          <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                               <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -208,7 +181,8 @@
                               </div>
                               <div class="modal-body">
                         
-                                {{ job['text']|safe }}
+                                    {{ job['marked_text']|safe }}
+                                <!--{{ job['text']|safe }}-->
                         
                               </div>
                               <div class="modal-footer">
@@ -246,17 +220,32 @@
             </div>
         </div>
     </section -->
+
+    <!-- ABOUT SECTION -->
+    <section class="bg-primary" id="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <h2 class="section-heading">About This Project</h2>
+                    <hr class="light">
+                    <p class="text-faded">HackrTrackr is a project developed by Greg Karpov, David Granas, and Phil Wright as our final Demo-day project for the Advanced Python Programming Course we completed with <a href="https://rmotr.com/">Rmotr.com</a>.  If you have any ideas for improvements to the project, drop us a line on GitHub, or send us a pull request!</p>
+                    <a href="https://github.com/phillipdwright/hackrtrackr" class="page-scroll btn btn-default btn-xl sr-button">Project Source</a>
+                </div>
+            </div>
+        </div>
+    </section>
     
-    {% if jobs is defined %}
-    powered by 
-    <a href='https://www.glassdoor.com/index.htm'>
-        <img src='https://www.glassdoor.com/static/img/api/glassdoor_logo_80.png' title='Job Search' />
-    </a>
-    and
-    <a href='https://www.algolia.com/'>
-        <img src='http://chrisronzio.com/wp-content/uploads/2014/12/AlgoliaLogoBlack.jpg' title='Algolia' height='18'/>
-    </a>
-    {% endif %}
+    <!-- CREDITS -->
+    <div class="bg-primary text-faded credits" margin=0>
+        powered by 
+        <a href='https://www.glassdoor.com/index.htm'>
+            <img src='https://www.glassdoor.com/static/img/api/glassdoor_logo_80.png' title='Job Search' />
+        </a>
+        and
+        <a href='https://www.algolia.com/'>
+            <img src='https://www.algolia.com/static_assets/images/flat2/algolia/algolia256x80_dark-b5d00e91.png' title='Algolia' height='18'/>
+        </a>
+    </div>
 
     <!-- jQuery -->
     <!-- script src="js/jquery.js"></script -->
