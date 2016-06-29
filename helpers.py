@@ -10,6 +10,7 @@ from flask import g
 from hn_search_api_helpers import COMMENTS_FILE, CACHED_COUNTS_FILE, load_json_file
 from bokeh.plotting import figure
 from bokeh.models import NumeralTickFormatter
+import os.path
 
 # taken from here selecting 12, qualitative colors: http://colorbrewer2.org/
 COLORS = (
@@ -40,11 +41,11 @@ HEX_COLORS = (
     )
 
 # Filename for HN logo, used as default
-HN_LOGO = 'hn_logo'
+HN_LOGO = 'img/logos/hn_logo.png'
 
 def string_to_date(string_date):
     '''
-    hiven: date as a string converts it to datetime.date
+    given: date as a string converts it to datetime.date
     '''
     return datetime.datetime.strptime(string_date, '%Y-%m-%d').date()
 
@@ -70,7 +71,7 @@ DATE_LIST_STR = [date.isoformat() for date in DATE_LIST]
 
 def plot_dots_and_line(fig, counts, keyword, color):   
     '''
-    given: fig for bokeh plot and counts np array
+    given: fig for bokeh plot, counts np array, keyword, color
     adds a dot and line plot of counts
     returns: fig
     '''
@@ -100,8 +101,6 @@ def make_fig(keywords):
     cached_counts = {}
     for entry in cached_counts_json:
         cached_counts[entry['keyword']] = entry['counts']
-    
-    
     
     fig = figure(
             x_axis_type = "datetime",
@@ -134,7 +133,7 @@ def make_fig(keywords):
             #print 'got cached counts for {}'.format(keyword)
             counts = np.array(cached_counts[keyword.lower()])
         else:
-            counts = keyword_check_db(g.db, keyword)
+            counts = keyword_check(keyword)
             counts /= np.array(cached_counts['Total Counts'])
         fig = plot_dots_and_line(fig, counts, keyword, color)
         
@@ -151,14 +150,17 @@ def number_comments_per_month(comments):
         counts[index] += 1
     return counts
     
-def keyword_check_db(g_db, keyword, prefix_suffix_flag=True, case_flag=False):
+def keyword_check(keyword, prefix_suffix_flag=True, case_flag=False):
+    '''
+    
+    '''
     sql_command = 'SELECT thread_date, text FROM posts'
-    cursor = g_db.execute(sql_command)
+    cursor = g.db.execute(sql_command)
     comments = cursor.fetchall()
     
     counts = np.zeros(len(DATE_LIST))
     keyword = re.escape(keyword) # escape special regex characters
-    print keyword
+    #print keyword
     if prefix_suffix_flag:
         keyword = '(\W|^){}(\W|$)'.format(keyword) # so it can't be part of a larger word
     
@@ -175,77 +177,77 @@ def keyword_check_db(g_db, keyword, prefix_suffix_flag=True, case_flag=False):
             counts[index] += 1
     return counts
 
-def get_matching_comments(comments, keywords):
-    '''
-    Return a list of comments from the current and previous month's threads
-    that match all the keywords
-    '''
-    # Find the first day of last month
-    last_month = datetime.date.today().replace(day=1) + relativedelta(months=-1)
+# def get_matching_comments_old(comments, keywords):
+#     '''
+#     Return a list of comments from the current and previous month's threads
+#     that match all the keywords
+#     '''
+#     # Find the first day of last month
+#     last_month = datetime.date.today().replace(day=1) + relativedelta(months=-1)
     
-    # Build a list of all comments posted since the first of last month
-    recent_comments = []
-    for comment in comments:
-        comment_date = comment['comment_date']
-        if comment_date >= last_month:
-            recent_comments.append(comment)
+#     # Build a list of all comments posted since the first of last month
+#     recent_comments = []
+#     for comment in comments:
+#         comment_date = comment['comment_date']
+#         if comment_date >= last_month:
+#             recent_comments.append(comment)
     
-    # Build a list of recent comments that match the keywords
-    matching_comments = []
+#     # Build a list of recent comments that match the keywords
+#     matching_comments = []
     
-    for comment in recent_comments:
+#     for comment in recent_comments:
         
-        # Get the comment text
-        text = BeautifulSoup(comment['text'], 'html.parser').get_text()
-        #text = comment['text']
-        # Verify that all keywords are found in the comment
-        if all(keyword.lower() in text.lower() for keyword in keywords):
+#         # Get the comment text
+#         text = BeautifulSoup(comment['text'], 'html.parser').get_text()
+#         #text = comment['text']
+#         # Verify that all keywords are found in the comment
+#         if all(keyword.lower() in text.lower() for keyword in keywords):
         
-            # Get a comment snippet to use on the display page
-            comment['snippet'] = _get_snippet(text, keywords)
+#             # Get a comment snippet to use on the display page
+#             comment['snippet'] = _get_snippet(text, keywords)
             
-            # Get rating and logo data from Glassdoor data
-            try:
-                company = find_company(text) # define
-            except:
-                company = None
-            if company is not None:
-                comment['rating'] = _get_rating(company) # define
-                comment['logo'] = _get_logo(company) # define
-            else:
-                # Use the generic HN logo if there is no company match
-                comment['logo'] = HN_LOGO
+#             # Get rating and logo data from Glassdoor data
+#             try:
+#                 company = find_company(text) # define
+#             except:
+#                 company = None
+#             if company is not None:
+#                 comment['rating'] = _get_rating(company) # define
+#                 comment['logo'] = _get_logo(company) # define
+#             else:
+#                 # Use the generic HN logo if there is no company match
+#                 comment['logo'] = HN_LOGO
             
-            # Append the comment to the matching comments list
-            matching_comments.append(comment)
+#             # Append the comment to the matching comments list
+#             matching_comments.append(comment)
     
-    location_match = False
-    # TODO:
-    # location_match = get_distances(recent_comments, location)
-    # Test to see if we can match location.  If so, define comment['distance']
-    # and set location_match = True.
+#     location_match = False
+#     # TODO:
+#     # location_match = get_distances(recent_comments, location)
+#     # Test to see if we can match location.  If so, define comment['distance']
+#     # and set location_match = True.
     
-    if location_match:
-        key = lambda comment: comment['distance']
-        reverse = False
-    else:
-        key = lambda comment: comment['comment_date']
-        reverse = True
+#     if location_match:
+#         key = lambda comment: comment['distance']
+#         reverse = False
+#     else:
+#         key = lambda comment: comment['comment_date']
+#         reverse = True
     
-    # Sort the matching comments starting with most recent and return the list
-    matching_comments = sorted(
-        matching_comments,
-        key=key,
-        reverse=reverse
-    )
+#     # Sort the matching comments starting with most recent and return the list
+#     matching_comments = sorted(
+#         matching_comments,
+#         key=key,
+#         reverse=reverse
+#     )
     
-    return matching_comments
-    
-def get_matching_comments_db(g_db, keywords):
+#     return matching_comments
+ 
+def get_matching_comments(keywords):
     # Build a list of all comments posted from June 2016
     sql_command = 'SELECT * FROM posts WHERE \
                 thread_date BETWEEN "2016-05-05" AND "2016-07-07"'
-    cursor = g_db.execute(sql_command)
+    cursor = g.db.execute(sql_command)
     names = [description[0] for description in cursor.description]
     recent_comments = cursor.fetchall()
     
@@ -262,6 +264,8 @@ def get_matching_comments_db(g_db, keywords):
     
     for comment_list in recent_comments:
         comment = {name:value for name,value in zip(names,comment_list)}
+        if 'thread_date' not in comment:
+            print comment
         comment['thread_date'] = string_to_date(comment['thread_date'])
         comment['comment_date'] = string_to_date(comment['comment_date'])
         total_keywords_found = 0
@@ -291,20 +295,34 @@ def get_matching_comments_db(g_db, keywords):
                             marked_text[end:]
         comment['marked_text'] = marked_text
         
-        # Verify that all keywords are found in the comment
+        # Verify that all keywords are found in the comment 
+        # (bug/feature - also works for 0 keywords)
         if total_keywords_found == len(keywords):
         
             # Get a comment snippet to use on the display page
-            comment['snippet'] = _get_snippet(text, keywords)
-            
+            #comment['snippet'] = _get_snippet(text, keywords)
+            comment['snippet'] = comment['company']
             # Get rating and logo data from Glassdoor data
+            # sql_command = 'SELECT * FROM company WHERE id == {}'.format(comment['glassdoor_id'])
+            # cursor = g.db.execute(sql_command)
+            # names = [description[0] for description in cursor.description]
+            # recent_comments = cursor.fetchall()
+            
             try:
-                company = find_company(text) # define
+                company = comment['company'] # define
             except:
                 company = None
-            if company is not None:
+            if company is not None: 
                 comment['rating'] = _get_rating(company) # define
                 comment['logo'] = _get_logo(company) # define
+                if comment['glassdoor_id']:
+                    filename = 'static/img/logos/{}.png'.format(comment['glassdoor_id'])
+                    if os.path.isfile(filename):
+                        comment['logo'] = 'img/logos/{}.png'.format(comment['glassdoor_id'])
+                    else:
+                        comment['logo'] = HN_LOGO
+                else:
+                    comment['logo'] = HN_LOGO
             else:
                 # Use the generic HN logo if there is no company match
                 comment['logo'] = HN_LOGO

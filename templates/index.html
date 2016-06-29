@@ -154,8 +154,8 @@
                         
                         <!-- MINI DISPLAY -->
                         <a data-toggle="modal" data-target="#{{ job['id'] }}">
-                            <img src="{{ url_for('static', filename='img/logos/hn_logo.png') }}" height="70" width="70"/>
-                            
+                            <!--<img src="{{ url_for('static', filename='img/logos/hn_logo.png') }}" height="70" width="70"/>-->
+                            <img src="{{ url_for('static', filename=job['logo']) }}" height="70" width="70"/>
                             <p>
                                 <a href="https://www.glassdoor.com/Reviews/Hulu-Reviews-E43242.htm">
                                     <i class="fa fa-2x fa-star text-primary sr-icons"></i>
