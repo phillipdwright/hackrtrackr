@@ -12,21 +12,17 @@
     <title>HackrTrackr</title>
 
     <!-- Bootstrap Core CSS -->
-    <!-- link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" type="text/css">
 
     <!-- Custom Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
-    <!-- link rel="stylesheet" href="font-awesome/css/font-awesome.min.css" type="text/css" -->
     <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}" type="text/css">
 
     <!-- Plugin CSS -->
-    <!-- link rel="stylesheet" href="css/magnific-popup.css" type="text/css" -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}" type="text/css">
 
     <!-- Custom CSS -->
-    <!-- link rel="stylesheet" href="css/creative.css" type="text/css" -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/creative.css') }}" type="text/css">
     
     <!-- Bokeh Embed code -->
@@ -148,46 +144,71 @@
         </div>
         <div class="container">
             <div class="row">
+                {% if jobs|length == 0 %}
+                
+                <div class="col-lg-12 text-center">
+                    <h3 class="section-heading text-muted">No jobs were found that matched all the keywords entered.</h3>
+                    <p class="text-muted">Try searching again with fewer keywords.</p>
+                    <a href="#page-top" class="btn btn-primary btn-xl page-scroll">Search Again</a>
+                </div>
+                
+                {% else %}
+                
                 {% for job in jobs %}
                 <div class="col-lg-3 col-md-6 text-center">
                     <div class="service-box">
                         
                         <!-- MINI DISPLAY -->
                         <a data-toggle="modal" data-target="#{{ job['id'] }}">
-                            <!--<img src="{{ url_for('static', filename='img/logos/hn_logo.png') }}" height="70" width="70"/>-->
                             <img src="{{ url_for('static', filename=job['logo']) }}" height="70" width="70"/>
-                            <p>
-                                <a href="https://www.glassdoor.com/Reviews/Hulu-Reviews-E43242.htm">
-                                    <i class="fa fa-2x fa-star text-primary sr-icons"></i>
-                                    <i class="fa fa-2x fa-star text-primary sr-icons"></i>
-                                    <i class="fa fa-2x fa-star text-primary sr-icons"></i>
-                                    <i class="fa fa-2x fa-star-half-o text-primary sr-icons"></i>
-                                    <i class="fa fa-2x fa-star-o text-primary sr-icons"></i>
-                                </a>
-                            </p>
                             
-                            {% if name in job %}<h3>{{ job['name'] }}</h3>{% endif %}
-                            {% if ratings in job %}{% endif %}
                             <p class="text-muted">{{ job['snippet'] }}</p>
                         </a>
                         
                         <!-- MODAL -->
-                        <div class="modal fade" id="{{ job['id'] }}" tabindex="-1" role="dialog" aria-labelledby="Job Post {{ job['id'] }}">
+                        <div class="modal fade text-left" id="{{ job['id'] }}" tabindex="-1" role="dialog" aria-labelledby="JobPost{{ job['id'] }}">
                           <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                               <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">Job Posting #{{ job['id'] }}</h4>
+                                
+                                <div class="modal-title" id="JobPost{{ job['id'] }}" style="background-image: url(..{{ url_for('static', filename=job['logo']) }}); background-size: 70px; background-repeat: no-repeat;">
+                                    <div style="margin-left: 80px; height: 70px">
+                                    
+                                    <!--Company Name-->
+                                    {% if 'glassdoor_url' in job %}<a href="{{ job['glassdoor_url'] }}">{% endif %}
+                                    {{ job['company'] }}<br>
+                                    {% if 'glassdoor_url' in job %}</a>{% endif %}
+                                    
+                                    <!--Location-->
+                                    {% if 'location' in job %}{{ job['location'] }}<br>{% endif %}
+                                    
+                                    <!--Industry-->
+                                    {% if 'industry' in job %}{{ job['industry'] }}<br>{% endif %}
+                                    
+                                    <!--Rating-->
+                                    {% if 'rating' in job %}
+                                        <a href="{{ job['glassdoor_url'] }}">
+                                            {% for i in range(job['rating']['full']) %}<i class="fa fa-star"></i>{% endfor %}
+                                            {% for i in range(job['rating']['half']) %}<i class="fa fa-star-half-o"></i>{% endfor %}
+                                            {% for i in range(job['rating']['empty']) %}<i class="fa fa-star-o"></i>{% endfor %}
+                                        </a>
+                                    {% else %}
+                                    {% for i in range(5) %}<i class="fa fa-star-o text-muted"></i>{% endfor %}
+                                    {% endif %}
+                                    </div>
+                                </div>
+                                <!--h4 class="modal-title" id="myModalLabel">Job Posting #{{ job['id'] }}</h4-->
                               </div>
                               <div class="modal-body">
                         
                                     {{ job['marked_text']|safe }}
-                                <!--{{ job['text']|safe }}-->
+                                    {{ job['distance']|safe }}
                         
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
+                                <a type="button" class="btn btn-primary" href="https://news.ycombinator.com/item?id={{ job['id'] }}">Go to Hacker News</a>
                               </div>
                             </div>
                           </div>
@@ -196,71 +217,62 @@
                     </div>
                 </div>
                 {% endfor %}
+                
+                {% endif %}
             </div>
         </div>
     </section>
     {% endif %}
-
-    <!-- section id="contact">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 text-center">
-                    <h2 class="section-heading">Let's Get In Touch!</h2>
-                    <hr class="primary">
-                    <p>Ready to start your next project with us? That's great! Give us a call or send us an email and we will get back to you as soon as possible!</p>
-                </div>
-                <div class="col-lg-4 col-lg-offset-2 text-center">
-                    <i class="fa fa-phone fa-3x sr-contact"></i>
-                    <p>123-456-6789</p>
-                </div>
-                <div class="col-lg-4 text-center">
-                    <i class="fa fa-envelope-o fa-3x sr-contact"></i>
-                    <p><a href="mailto:your-email@your-domain.com">feedback@startbootstrap.com</a></p>
-                </div>
-            </div>
-        </div>
-    </section -->
+    
 
     <!-- ABOUT SECTION -->
     <section class="bg-primary" id="about">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-8 text-center">
+            <!--div class="row"-->
+                <div class="col-lg-8 col-lg-offset-2 text-center">
                     <h2 class="section-heading">About This Project</h2>
                     <hr class="light">
                     <p class="text-faded">HackrTrackr is a project developed by Greg Karpov, David Granas, and Phil Wright as our final Demo-day project for the Advanced Python Programming Course we completed with <a class="text-faded" href="https://rmotr.com/">Rmotr.com</a>.</p>
                     
-                    <!--div class="row"-->
-                        <div class="sr-contact">
+                    <div class="row">
+                        <div class="col-lg-4 logo sr-contact">
+                            <a href='https://rmotr.com/'>
+                                <img src="{{ url_for('static', filename='img/rmotr_white_on_blank.png') }}" title='Rmotr Rocks!' width='100'/>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 logo sr-contact">
                             <a href='https://www.glassdoor.com/index.htm'>
-                                <img src='https://press-content.glassdoor.com/app/uploads/sites/2/2015/04/GD_logo_Green-2.png' title='Job Search' width='100'/>
+                                <img src='https://press-content.glassdoor.com/app/uploads/sites/2/2015/04/GD_logo_Green-2.png' title='Glassdoor Job Search' width='100'/>
                             </a>
                         </div>
-                        <div class="sr-contact">
+                        <div class="col-lg-4 logo sr-contact">
                             <a href='https://hn.algolia.com/api'>
-                                <img src='https://www.algolia.com/static_assets/images/flat2/algolia/algolia256x80_dark-b5d00e91.png' title='Algolia' width='100'/>
+                                <img src='https://www.algolia.com/static_assets/images/flat2/algolia/algolia256x80_dark-b5d00e91.png' title='Algolia HN API' width='100'/>
                             </a>
                         </div>
-                    <!-- /div -->
-                    
-                    <hr>
-                    <p class="text-faded">HackrTracker uses the <a class="text-faded" href="https://hn.algolia.com/api">Hacker News Search API built by Algolia</a> to source the job posts and the data behind the figures displayed on the site.  The trend data uses historical information sourced from the Hacker News Search API.  The project also relies on <a class="text-faded" href="https://www.glassdoor.com/developer/companiesApiActions.htm">Glassdoor's Companies API</a> for company rating information and for links to Glassdoor's company overview resources.</p>
+                    </div>
+                    <br>
+                    <!--<hr>-->
+                    <p class="text-faded">HackrTracker uses the <a class="text-faded" href="https://hn.algolia.com/api">Hacker News Search API</a> built by Algolia to source the job posts and the data behind the figures displayed on the site.  The trend data uses historical information sourced from the Hacker News Search API.  The project also relies on <a class="text-faded" href="https://www.glassdoor.com/developer/companiesApiActions.htm">Glassdoor's Companies API</a> for company rating information and for links to Glassdoor's company overview resources, like company reviews, .</p>
                     <p class="text-faded">If you have any ideas for improvements to the project, drop us a line on GitHub, or send us a pull request!</p>
+                    <hr>
+                    <hr>
                     <a href="https://github.com/phillipdwright/hackrtrackr" class="page-scroll btn btn-default btn-xl sr-button">Project Source</a>
                 </div>
-            </div>
+            <!--/div-->
         </div>
     </section>
+    
     
     <!-- CREDITS -->
     <div class="bg-primary text-faded credits" margin=0>
         powered by 
         <a href='https://www.glassdoor.com/index.htm'>
-            <img src='https://www.glassdoor.com/static/img/api/glassdoor_logo_80.png' title='Job Search' />
+            <img src='https://www.glassdoor.com/static/img/api/glassdoor_logo_80.png' title='Glassdoor Job Search' />
         </a>
         and
         <a href='https://hn.algolia.com/api'>
-            <img src='https://www.algolia.com/static_assets/images/flat2/algolia/algolia256x80_dark-b5d00e91.png' title='Algolia' height='18'/>
+            <img src='https://www.algolia.com/static_assets/images/flat2/algolia/algolia256x80_dark-b5d00e91.png' title='Algolia HN API' height='18'/>
         </a>
     </div>
 
@@ -289,10 +301,14 @@
             lon.value = position.coords.longitude;
         }
         
+        function error(position) {
+            /* Maybe add a script here to prompt the user to enter location info*/
+        }
+        
         /* If the API is available, either use geolocation data that is less
             than a day old or make a new call to the geolocation API. */
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(success, {maximumAge: 86400000});
+            navigator.geolocation.getCurrentPosition(success, error, {maximumAge: 86400000});
         }
     </script>
 

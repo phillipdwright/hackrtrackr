@@ -34,8 +34,8 @@ def index():
         keywords = keywords[:len(COLORS)] # prevent too many keywords
         
         # Get the location data
-        location = (request.form['latitude'], request.form['longitude'])
-        print 'Location: ', location # For testing purposes
+        user_location = (request.form['latitude'], request.form['longitude'])
+        print 'Location: ', user_location # For testing purposes
 
         fig = make_fig(keywords)
         
@@ -46,7 +46,7 @@ def index():
         script, div = components(fig, INLINE)
         
         # Get recent comments matching the keywords
-        recent_comments = get_matching_comments(keywords)
+        recent_comments = get_matching_comments(keywords, user_location)
         
         # special case if no keywords entered - show 'All' comment counts
         if not keywords:

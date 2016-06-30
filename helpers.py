@@ -11,6 +11,7 @@ from hn_search_api_helpers import COMMENTS_FILE, CACHED_COUNTS_FILE, load_json_f
 from bokeh.plotting import figure
 from bokeh.models import NumeralTickFormatter
 import os.path
+import vincenty
 
 # unicode errors with city names so used this SO answer:
 # http://stackoverflow.com/questions/31137552/unicodeencodeerror-ascii-codec-cant-encode-character-at-special-name
@@ -48,6 +49,9 @@ HEX_COLORS = (
 
 # Filename for HN logo, used as default
 HN_LOGO = 'img/logos/hn_logo.png'
+
+# Base Glassdoor url
+GD_BASE = 'https://www.glassdoor.com/Overview/-EI_IE{}.htm'
 
 def string_to_date(string_date):
     '''
@@ -120,7 +124,7 @@ def make_fig(keywords):
     fig.xgrid.grid_line_color = fig.ygrid.grid_line_color = '#e7e7e7'
     fig.xaxis.major_tick_line_color = fig.yaxis.major_tick_line_color = '#e7e7e7'
     fig.legend.border_line_color = '#e7e7e7'
-    fig.yaxis[0].formatter = NumeralTickFormatter(format="0%")
+    fig.yaxis[0].formatter = NumeralTickFormatter(format="0.0%")
     
     # if no keywords get total posts per month
     if not keywords:
@@ -139,7 +143,7 @@ def make_fig(keywords):
             #print 'got cached counts for {}'.format(keyword)
             counts = np.array(cached_counts[keyword.lower()])
         else:
-            counts = keyword_check(keyword)
+            counts = keyword_counts(keyword)
             counts /= np.array(cached_counts['Total Counts'])
         fig = plot_dots_and_line(fig, counts, keyword, color)
         
@@ -156,9 +160,10 @@ def number_comments_per_month(comments):
         counts[index] += 1
     return counts
     
-def keyword_check(keyword, prefix_suffix_flag=True, case_flag=False):
+def keyword_counts(keyword, prefix_suffix_flag=True, case_flag=False):
     '''
-    
+    Used to get counts for how many comments had a hit to this keyword
+    * Right now checks against html just so it is faster...
     '''
     sql_command = 'SELECT thread_date, text FROM posts'
     cursor = g.db.execute(sql_command)
@@ -249,7 +254,7 @@ def keyword_check(keyword, prefix_suffix_flag=True, case_flag=False):
     
 #     return matching_comments
  
-def get_matching_comments(keywords):
+def get_matching_comments(keywords, user_location):
     # Build a list of all comments posted from June 2016
     current_month = datetime.date.today().replace(day=1)
     current_month = datetime.date(2016,6,1).isoformat() # take this out if auto-update is working
@@ -261,7 +266,7 @@ def get_matching_comments(keywords):
 
     # Build a list of recent comments that match the keywords
     matching_comments = []
-    
+        
     # compile patterns for each keyword
     patterns = []
     for keyword in keywords:
@@ -272,40 +277,8 @@ def get_matching_comments(keywords):
     
     for comment_list in recent_comments:
         comment = {name:value for name,value in zip(posts_names,comment_list)}
-
-        # get the dates as datetime.dates for the plot
-        comment['thread_date'] = string_to_date(comment['thread_date'])
-        comment['comment_date'] = string_to_date(comment['comment_date'])
-        
-        total_keywords_found = 0
-        marked_text = comment['text'] # used to add the keyword highlighting
-        text = BeautifulSoup(comment['text'], 'html.parser').get_text()
-        
-        for pattern, color in zip(patterns, HEX_COLORS):
-            keyword_found = False
-            start_ends = [] # store the position of each keyword match
-            for m in pattern.finditer(marked_text):
-                keyword_found = True
-                start_ends.append((m.start(), m.end()))
-            if keyword_found:
-                total_keywords_found += 1
-                
-            # go in reverse to add the highlighting tags so the tags don't affect other positions
-            for start_end in start_ends[::-1]:
-                start, end = start_end
-
-                if start > 0: # make sure hit wasn't at beginning of line
-                    start += 1
-                if end < len(marked_text) -1: # same with end of line
-                    end -= 1
-
-                # insert the highlighting tags
-                marked_text = marked_text[:start] + \
-                            '<font color="{}">'.format(color) + \
-                            marked_text[start:end] + \
-                            '</font>' + \
-                            marked_text[end:]
-        comment['marked_text'] = marked_text
+        comment['pure_text'] = BeautifulSoup(comment['text'], 'html.parser').get_text()
+        comment, total_keywords_found = _keyword_check(comment, patterns)
         
         # Verify that all keywords are found in the comment 
         # (bug/feature - also works for 0 keywords)
@@ -314,94 +287,59 @@ def get_matching_comments(keywords):
             # check whether remote or not
             remote = False
             p = re.compile('(\W|^)(?<!no )(remote)(\W|$)', re.IGNORECASE)
-            if p.search(text):
+            if p.search(comment['pure_text']):
                 remote = True
-        
-            # Get a comment snippet to use on the display page
-            #comment['snippet'] = _get_snippet(text, keywords)
-            
-            # get location data
-            sql_command = 'SELECT * FROM id_geocode WHERE id == ?'
-            cursor = g.db.execute(sql_command, (comment['id'],))
-            locations_names = [description[0] for description in cursor.description]
-            locations = cursor.fetchall()
-            # [('city', 'country', 'id', 'lat', 'lng', 'state')]
-            print locations
-            if len(locations) > 1:
-                location = ' | Various sites'
-            elif len(locations) == 0 and remote:
-                location = ' | Remote only'
-            elif len(locations) == 0 and not remote:
-                location = ''
+                comment['distance'] = 0
             else:
-                location_dict = {name:value for name,value in zip(locations_names,locations[0])}
-                city = location_dict['city']
-                state = location_dict['state']
-                country = location_dict['country']
-                
-                if country in ('US','CA'):
-                    location = ' | '
-                    if city and state:
-                        location += '{}, {}'.format(city, state)
-                    elif city:
-                        location += city
-                    elif state:
-                        location += state
-                    elif country:
-                        location += country
-                    else:
-                        location = '' # don't think this will ever happen
-                else:
-                    location = ' | '
-                    if city and country:
-                        location += '{}, {}'.format(city, country)
-                    elif city:
-                        location += city
-                    elif state and country:
-                        location += '{}, {}'.format(state, country)
-                    elif country:
-                        location += country
-                    else:
-                        location = ''
+                comment['distance'] = _get_distance(comment['id'], user_location)
+        
+            location = _get_location(comment['id'], remote)
                     
+            if location:
+                comment['location'] = location
+                
+            #comment['distance'] = _get_distance(comment['id'], user_location)
+                
+            comment['snippet'] = ' | '.join(i for i in (comment['company'], location) if i)
             
-            comment['snippet'] = '{}{}'.format(comment['company'], location)
-            # Get rating and logo data from Glassdoor data
-            # sql_command = 'SELECT * FROM company WHERE id == {}'.format(comment['glassdoor_id'])
-            # cursor = g.db.execute(sql_command)
-            # names = [description[0] for description in cursor.description]
-            # recent_comments = cursor.fetchall()
-            
-            try:
-                company = comment['company'] # define
-            except:
-                company = None
-            if company is not None: 
-                comment['rating'] = _get_rating(company) # define
-                comment['logo'] = _get_logo(company) # define
-                if comment['glassdoor_id']:
-                    filename = 'static/img/logos/{}.png'.format(comment['glassdoor_id'])
-                    if os.path.isfile(filename):
-                        comment['logo'] = 'img/logos/{}.png'.format(comment['glassdoor_id'])
-                    else:
-                        comment['logo'] = HN_LOGO
+            if comment['glassdoor_id']:
+                # I need to fix the database so only the ones we have logos
+                # for will have a squareLogo entry ***
+                # Set logo from Glassdoor
+                filename = 'static/img/logos/{}.png'.format(comment['glassdoor_id'])
+                if os.path.isfile(filename):
+                    comment['logo'] = 'img/logos/{}.png'.format(comment['glassdoor_id'])
                 else:
                     comment['logo'] = HN_LOGO
+                
+                # Set url from Glassdoor
+                comment['glassdoor_url'] = GD_BASE.format(comment['glassdoor_id'])
+                
+                # Get rating from Glassdoor
+                comment['rating'] = _get_rating(comment)
+                if not comment['rating']:
+                    del comment['rating']
+                    
+                # Industry
+                comment['industry'] = _get_industry(comment)
+                if not comment['industry']:
+                    del comment['industry']
+                    
             else:
-                # Use the generic HN logo if there is no company match
+                # Use the generic HN logo if there is no Glassdoor match
                 comment['logo'] = HN_LOGO
             
             # Append the comment to the matching comments list
             matching_comments.append(comment)
     
-    location_match = False
+    location_match = True
     # TODO:
     # location_match = get_distances(recent_comments, location)
     # Test to see if we can match location.  If so, define comment['distance']
     # and set location_match = True.
     
     if location_match:
-        key = lambda comment: comment['distance']
+        key = lambda comment: (comment['distance'], comment['comment_date'])
         reverse = False
     else:
         key = lambda comment: comment['comment_date']
@@ -458,17 +396,159 @@ def _get_snippet(text, keywords):
     return u'"{}"'.format(snippet)
 
 
-#################################
-#                               #
-# HELPER FUNCTIONS YET TO WRITE #
-#                               #
-#################################
+def _get_rating(comment):
+    '''
+    Query the company table for the company listed in the comment for its
+    rating.  Return a dict of stars that represent what will be displayed on
+    the job posting modal.
+    '''
+    id_ = comment['glassdoor_id']
+    query = "SELECT overallRating FROM company WHERE id == ?"
+    cursor = g.db.execute(query, (id_,))
+    #print "id:", id_
+    
+    rating = cursor.fetchone()[0]
 
-def find_company(text): # can use 'company' field in comments_db.json
-    pass
+    #print "rating:", rating
+    if rating:
+        # Get conservative integer estimates for each value
+        stars = {
+            'full': int(rating / 1),
+            'half': 0,
+            'empty': int((5 - rating) / 1)
+        }
+        
+        # If the decimal portion of the rating is between 0.25 and 0.75, display
+        #  a half-star.  Otherwise, round the rating to the nearest integer.
+        remainder = rating % 1
+        if remainder == 0:
+            pass
+        elif remainder < 0.25:
+            stars['empty'] += 1
+        elif remainder < 0.75:
+            stars['half'] += 1
+        else:
+            stars['full'] += 1
+        
+        return stars
+    return None
+    
+def _get_industry(comment):
+    id_ = comment['glassdoor_id']
+    query = "SELECT industry FROM company WHERE id == ?"
+    cursor = g.db.execute(query, (id_,))
+    return cursor.fetchone()[0]
+    
+def _get_location(id_, remote):
+    '''
+    given: comment id 
+    returns: a string representation of the location (can be '')
+    '''
+    sql_command = 'SELECT * FROM id_geocode WHERE id == ?'
+    cursor = g.db.execute(sql_command, (id_,))
+    locations_names = [description[0] for description in cursor.description]
+    locations = cursor.fetchall()
+    # [('city', 'country', 'id', 'lat', 'lng', 'state')]
+    
+    if len(locations) > 1:
+        location = 'Various sites'
+    elif len(locations) == 0 and remote:
+        location = 'Remote only'
+    elif len(locations) == 0 and not remote:
+        location = ''
+    else:
+        location_dict = {name:value for name,value in zip(locations_names,locations[0])}
+        city = location_dict['city']
+        state = location_dict['state']
+        country = location_dict['country']
+        
+        if country in ('US','CA'):
+            location = ', '.join(i for i in (city, state) if i)
+            if not location:
+                location = country
+        else:
+            location = ', '.join(i for i in (city, country) if i)
 
-def _get_rating(text):
-    pass
+    return location
+    
+def _keyword_check(comment, patterns):
+    '''
+    given: comment dict and list of re patterns
+    finds all pattern matches and adds html font color tags
+    returns: comment dict and also total_keywords_found
+    '''
+    # get the dates as datetime.dates for the plot
+    comment['thread_date'] = string_to_date(comment['thread_date'])
+    comment['comment_date'] = string_to_date(comment['comment_date'])
+    
+    total_keywords_found = 0
+    marked_text = comment['text'] # used to add the keyword highlighting
+    
+    
+    for pattern, color in zip(patterns, HEX_COLORS):
+        keyword_found = False
+        start_ends = [] # store the position of each keyword match
+        if pattern.search(comment['pure_text']):
+            for m in pattern.finditer(marked_text):
+                keyword_found = True
+                start_ends.append((m.start(), m.end()))
+        if keyword_found:
+            total_keywords_found += 1
+            
+        # go in reverse to add the highlighting tags so the tags don't affect other positions
+        for start_end in start_ends[::-1]:
+            start, end = start_end
+            
+            # Phil's very clever solution to avoid marking inside <a href> tags!
+            previous_text = marked_text[:start].split()
+            if previous_text and previous_text[-1].startswith('href'):
+                continue
 
-def _get_logo(text): # May not need this one?  Think I just need company ID
-    pass
+            if start > 0: # make sure hit wasn't at beginning of line
+                start += 1
+            if end < len(marked_text) -1: # same with end of line
+                end -= 1
+
+            # insert the highlighting tags
+            marked_text = marked_text[:start] + \
+                        '<font color="{}">'.format(color) + \
+                        marked_text[start:end] + \
+                        '</font>' + \
+                        marked_text[end:]
+    comment['marked_text'] = marked_text
+    
+    return comment, total_keywords_found
+    
+def _get_distance(id_, user_latlng):
+    '''
+    given: comment id and user latlng tuple
+    calculates distance to all locations for that comment id
+    returns: the closest distance
+    '''
+    if not all(user_latlng):
+        return 25000
+
+    user_latlng = tuple(float(i) for i in user_latlng)
+    #print user_latlng, type(user_latlng[0]), type(user_latlng[1])
+    sql_command = 'SELECT lat, lng FROM id_geocode WHERE id == ?'
+    cursor = g.db.execute(sql_command, (id_,))
+    locations_names = [description[0] for description in cursor.description]
+    locations = cursor.fetchall()
+    # [('lat', 'lng')]
+    
+    closest_distance = 25000
+    for job_latlng in locations:
+        #print job_latlng, type(job_latlng[0]), type(job_latlng[1])
+        distance = vincenty.vincenty(user_latlng, job_latlng, miles=True)
+        if distance < closest_distance:
+            closest_distance = distance
+    return closest_distance
+        
+    
+    
+    
+    
+    
+
+    
+    
