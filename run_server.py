@@ -32,6 +32,10 @@ def index():
         keywords = request.form["keywords"]
         keywords = [keyword.strip() for keyword in keywords.split(',') if len(keyword) > 0]
         keywords = keywords[:len(COLORS)] # prevent too many keywords
+        
+        # Get the location data
+        location = (request.form['latitude'], request.form['longitude'])
+        print 'Location: ', location # For testing purposes
 
         fig = make_fig(keywords)
         

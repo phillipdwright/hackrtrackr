@@ -12,6 +12,12 @@ from bokeh.plotting import figure
 from bokeh.models import NumeralTickFormatter
 import os.path
 
+# unicode errors with city names so used this SO answer:
+# http://stackoverflow.com/questions/31137552/unicodeencodeerror-ascii-codec-cant-encode-character-at-special-name
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 # taken from here selecting 12, qualitative colors: http://colorbrewer2.org/
 COLORS = (
         (0, 57, 230), # blue, saturated high 
@@ -245,16 +251,18 @@ def keyword_check(keyword, prefix_suffix_flag=True, case_flag=False):
  
 def get_matching_comments(keywords):
     # Build a list of all comments posted from June 2016
-    sql_command = 'SELECT * FROM posts WHERE \
-                thread_date BETWEEN "2016-05-05" AND "2016-07-07"'
-    cursor = g.db.execute(sql_command)
-    names = [description[0] for description in cursor.description]
-    recent_comments = cursor.fetchall()
+    current_month = datetime.date.today().replace(day=1)
+    current_month = datetime.date(2016,6,1).isoformat() # take this out if auto-update is working
     
+    sql_command = 'SELECT * FROM posts WHERE thread_date == ?'
+    cursor = g.db.execute(sql_command, (current_month,))
+    posts_names = [description[0] for description in cursor.description]
+    recent_comments = cursor.fetchall()
+
     # Build a list of recent comments that match the keywords
     matching_comments = []
     
-    # compile pattersn for each keyword
+    # compile patterns for each keyword
     patterns = []
     for keyword in keywords:
         keyword = re.escape(keyword)
@@ -263,31 +271,35 @@ def get_matching_comments(keywords):
         patterns.append(p)
     
     for comment_list in recent_comments:
-        comment = {name:value for name,value in zip(names,comment_list)}
-        if 'thread_date' not in comment:
-            print comment
+        comment = {name:value for name,value in zip(posts_names,comment_list)}
+
+        # get the dates as datetime.dates for the plot
         comment['thread_date'] = string_to_date(comment['thread_date'])
         comment['comment_date'] = string_to_date(comment['comment_date'])
+        
         total_keywords_found = 0
-        marked_text = comment['text']
+        marked_text = comment['text'] # used to add the keyword highlighting
         text = BeautifulSoup(comment['text'], 'html.parser').get_text()
         
         for pattern, color in zip(patterns, HEX_COLORS):
             keyword_found = False
-            start_ends = []
+            start_ends = [] # store the position of each keyword match
             for m in pattern.finditer(marked_text):
                 keyword_found = True
                 start_ends.append((m.start(), m.end()))
             if keyword_found:
                 total_keywords_found += 1
+                
+            # go in reverse to add the highlighting tags so the tags don't affect other positions
             for start_end in start_ends[::-1]:
-                start = start_end[0]
-                end = start_end[1]
-                if start > 0:
+                start, end = start_end
+
+                if start > 0: # make sure hit wasn't at beginning of line
                     start += 1
-                if end < len(marked_text) -1:
+                if end < len(marked_text) -1: # same with end of line
                     end -= 1
 
+                # insert the highlighting tags
                 marked_text = marked_text[:start] + \
                             '<font color="{}">'.format(color) + \
                             marked_text[start:end] + \
@@ -299,9 +311,61 @@ def get_matching_comments(keywords):
         # (bug/feature - also works for 0 keywords)
         if total_keywords_found == len(keywords):
         
+            # check whether remote or not
+            remote = False
+            p = re.compile('(\W|^)(?<!no )(remote)(\W|$)', re.IGNORECASE)
+            if p.search(text):
+                remote = True
+        
             # Get a comment snippet to use on the display page
             #comment['snippet'] = _get_snippet(text, keywords)
-            comment['snippet'] = comment['company']
+            
+            # get location data
+            sql_command = 'SELECT * FROM id_geocode WHERE id == ?'
+            cursor = g.db.execute(sql_command, (comment['id'],))
+            locations_names = [description[0] for description in cursor.description]
+            locations = cursor.fetchall()
+            # [('city', 'country', 'id', 'lat', 'lng', 'state')]
+            print locations
+            if len(locations) > 1:
+                location = ' | Various sites'
+            elif len(locations) == 0 and remote:
+                location = ' | Remote only'
+            elif len(locations) == 0 and not remote:
+                location = ''
+            else:
+                location_dict = {name:value for name,value in zip(locations_names,locations[0])}
+                city = location_dict['city']
+                state = location_dict['state']
+                country = location_dict['country']
+                
+                if country in ('US','CA'):
+                    location = ' | '
+                    if city and state:
+                        location += '{}, {}'.format(city, state)
+                    elif city:
+                        location += city
+                    elif state:
+                        location += state
+                    elif country:
+                        location += country
+                    else:
+                        location = '' # don't think this will ever happen
+                else:
+                    location = ' | '
+                    if city and country:
+                        location += '{}, {}'.format(city, country)
+                    elif city:
+                        location += city
+                    elif state and country:
+                        location += '{}, {}'.format(state, country)
+                    elif country:
+                        location += country
+                    else:
+                        location = ''
+                    
+            
+            comment['snippet'] = '{}{}'.format(comment['company'], location)
             # Get rating and logo data from Glassdoor data
             # sql_command = 'SELECT * FROM company WHERE id == {}'.format(comment['glassdoor_id'])
             # cursor = g.db.execute(sql_command)

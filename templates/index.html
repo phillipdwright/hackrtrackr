@@ -31,7 +31,7 @@
     
     <!-- Bokeh Embed code -->
     {% if keywords is defined %}
-    
+        
         {{ js_resources|indent(4)|safe }}
         {{ css_resources|indent(4)|safe }}
         {{ plot_script|indent(4)|safe }}
@@ -79,7 +79,7 @@
                     {% endif %}
                     
                     <li>
-                        <a class="page-scroll" href="#contact">About</a>
+                        <a class="page-scroll" href="#about">About</a>
                     </li>
                     <li>
                         <a class="page-scroll" href="https://github.com/phillipdwright/hackrtrackr">Source</a>
@@ -96,8 +96,6 @@
             <div class="header-content-inner">
                 <h1>The Right Coding Job Is Out There</h1>
                 <hr>
-                <!-- p>Start Bootstrap can help you build better websites using the Bootstrap CSS framework! Just download your template and start going, no strings attached!</p -->
-                <!-- a href="#about" class="btn btn-primary btn-xl page-scroll">Find Out More</a -->
                 <form id="search-form" class="form-inline" role="form" action="#plot" method="POST">
                     <div class="input-group">
             		    <input type="text" class="form-control search-form search-input" name="keywords" placeholder="Search job keywords">
@@ -107,11 +105,13 @@
 							</button>
 						</span>
         		    </div>
+        		    
+					<input type="hidden" id="lat" name="latitude" value="">
+					<input type="hidden" id="lon" name="longitude" value="">
         		</form>
             </div>
         </div>
     </header>
-
     
     <!-- PLOT SECTION -->
     {% if keywords is defined %}
@@ -225,10 +225,27 @@
     <section class="bg-primary" id="about">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 text-center">
+                <div class="col-lg-8 text-center">
                     <h2 class="section-heading">About This Project</h2>
                     <hr class="light">
-                    <p class="text-faded">HackrTrackr is a project developed by Greg Karpov, David Granas, and Phil Wright as our final Demo-day project for the Advanced Python Programming Course we completed with <a href="https://rmotr.com/">Rmotr.com</a>.  If you have any ideas for improvements to the project, drop us a line on GitHub, or send us a pull request!</p>
+                    <p class="text-faded">HackrTrackr is a project developed by Greg Karpov, David Granas, and Phil Wright as our final Demo-day project for the Advanced Python Programming Course we completed with <a class="text-faded" href="https://rmotr.com/">Rmotr.com</a>.</p>
+                    
+                    <!--div class="row"-->
+                        <div class="sr-contact">
+                            <a href='https://www.glassdoor.com/index.htm'>
+                                <img src='https://press-content.glassdoor.com/app/uploads/sites/2/2015/04/GD_logo_Green-2.png' title='Job Search' width='100'/>
+                            </a>
+                        </div>
+                        <div class="sr-contact">
+                            <a href='https://hn.algolia.com/api'>
+                                <img src='https://www.algolia.com/static_assets/images/flat2/algolia/algolia256x80_dark-b5d00e91.png' title='Algolia' width='100'/>
+                            </a>
+                        </div>
+                    <!-- /div -->
+                    
+                    <hr>
+                    <p class="text-faded">HackrTracker uses the <a class="text-faded" href="https://hn.algolia.com/api">Hacker News Search API built by Algolia</a> to source the job posts and the data behind the figures displayed on the site.  The trend data uses historical information sourced from the Hacker News Search API.  The project also relies on <a class="text-faded" href="https://www.glassdoor.com/developer/companiesApiActions.htm">Glassdoor's Companies API</a> for company rating information and for links to Glassdoor's company overview resources.</p>
+                    <p class="text-faded">If you have any ideas for improvements to the project, drop us a line on GitHub, or send us a pull request!</p>
                     <a href="https://github.com/phillipdwright/hackrtrackr" class="page-scroll btn btn-default btn-xl sr-button">Project Source</a>
                 </div>
             </div>
@@ -242,17 +259,15 @@
             <img src='https://www.glassdoor.com/static/img/api/glassdoor_logo_80.png' title='Job Search' />
         </a>
         and
-        <a href='https://www.algolia.com/'>
+        <a href='https://hn.algolia.com/api'>
             <img src='https://www.algolia.com/static_assets/images/flat2/algolia/algolia256x80_dark-b5d00e91.png' title='Algolia' height='18'/>
         </a>
     </div>
 
     <!-- jQuery -->
-    <!-- script src="js/jquery.js"></script -->
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <!-- script src="js/bootstrap.min.js"></script -->
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
     <!-- Plugin JavaScript -->
@@ -260,14 +275,26 @@
     <script src="{{ url_for('static', filename='js/jquery.easing.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.fittext.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.magnific-popup.min.js') }}"></script>
-    <!-- script src="js/scrollreveal.min.js"></script>
-    <script src="js/jquery.easing.min.js"></script>
-    <script src="js/jquery.fittext.js"></script>
-    <script src="js/jquery.magnific-popup.min.js"></script -->
 
     <!-- Custom Theme JavaScript -->
-    <!-- script src="js/creative.js"></script -->
     <script src="{{ url_for('static', filename='js/creative.js') }}"></script>
+    
+    <!-- Geolocation JavaScript -->
+    <script type="text/javascript">
+        function success(position) {
+            var lat = document.getElementById("lat");
+            var lon = document.getElementById("lon");
+            
+            lat.value = position.coords.latitude;
+            lon.value = position.coords.longitude;
+        }
+        
+        /* If the API is available, either use geolocation data that is less
+            than a day old or make a new call to the geolocation API. */
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(success, {maximumAge: 86400000});
+        }
+    </script>
 
 </body>
 
