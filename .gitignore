@@ -7,6 +7,7 @@ venv3/
 staticfiles
 .env
 db.sqlite3
+
 .~c9*
 
 # Phil test files
@@ -15,6 +16,9 @@ phil.sql
 # Dave test files
 dave_find_company.py
 dave_test_cache.py
+
+# Settings file (recreate in production)
+settings.py
 
 heroku/
 old_data/
