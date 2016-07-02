@@ -24,6 +24,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/creative.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hackrtrackr.css') }}" type="text/css">
     
     <!-- Bokeh Embed code -->
     {% if keywords is defined %}
@@ -94,7 +95,7 @@
                 <hr>
                 <form id="search-form" class="form-inline" role="form" action="#plot" method="POST">
                     <div class="input-group">
-            		    <input type="text" class="form-control search-form search-input" name="keywords" placeholder="Search job keywords">
+            		    <input type="text" class="form-control search-form search-input" name="keywords" placeholder="Python, remote...">
             		    <span class="input-group-btn">
             		        <button type="submit" class="btn btn-primary search-btn" data-target="#search-form" name="q">
         		                <i class="fa fa-search"><!--FONT AWESOME font @ "http://fortawesome.github.io/Font-Awesome/" --></i>
@@ -111,7 +112,7 @@
     
     <!-- PLOT SECTION -->
     {% if keywords is defined %}
-    <section id="plot">
+    <section id="plot" style="min-height: 700px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -120,13 +121,13 @@
                 </div>
             </div>
         </div>
-        <div class="container">
+        <!--<div class="container plot">-->
             
-            <div class="row">
+            <!--<div class="row">-->
                 {{ plot_div|indent(4)|safe }}
-            </div>
+            <!--</div>-->
             
-        </div>
+        <!--</div>-->
     </section>
     {% endif %}
 
@@ -156,13 +157,14 @@
                 
                 {% for job in jobs %}
                 <div class="col-lg-3 col-md-6 text-center">
-                    <div class="service-box">
+                    <div class="service-box" style="min-height: 118px;">
                         
                         <!-- MINI DISPLAY -->
                         <a data-toggle="modal" data-target="#{{ job['id'] }}">
-                            <img src="{{ url_for('static', filename=job['logo']) }}" height="70" width="70"/>
+                            <img class="logo" src="{{ url_for('static', filename=job['logo']) }}" height="70" width="70"/>
                             
-                            <p class="text-muted">{{ job['snippet'] }}</p>
+                            <!--<p class="text-muted">{{ job['snippet'] }}</p>-->
+                            <p class="snippet">{{ job['snippet'] }}</p>
                         </a>
                         
                         <!-- MODAL -->
@@ -189,9 +191,9 @@
                                     <!--Rating-->
                                     {% if 'rating' in job %}
                                         <a href="{{ job['glassdoor_url'] }}">
-                                            {% for i in range(job['rating']['full']) %}<i class="fa fa-star"></i>{% endfor %}
-                                            {% for i in range(job['rating']['half']) %}<i class="fa fa-star-half-o"></i>{% endfor %}
-                                            {% for i in range(job['rating']['empty']) %}<i class="fa fa-star-o"></i>{% endfor %}
+                                            {% for i in range(job['rating']['full']) %}<i class="fa fa-star"></i>{% endfor %}<!--
+                                            -->{% for i in range(job['rating']['half']) %}<i class="fa fa-star-half-o"></i>{% endfor %}<!--
+                                            -->{% for i in range(job['rating']['empty']) %}<i class="fa fa-star-o"></i>{% endfor %}
                                         </a>
                                     {% else %}
                                     {% for i in range(5) %}<i class="fa fa-star-o text-muted"></i>{% endfor %}
@@ -203,7 +205,6 @@
                               <div class="modal-body">
                         
                                     {{ job['marked_text']|safe }}
-                                    {{ job['distance']|safe }}
                         
                               </div>
                               <div class="modal-footer">
@@ -235,17 +236,17 @@
                     <p class="text-faded">HackrTrackr is a project developed by Greg Karpov, David Granas, and Phil Wright as our final Demo-day project for the Advanced Python Programming Course we completed with <a class="text-faded" href="https://rmotr.com/">Rmotr.com</a>.</p>
                     
                     <div class="row">
-                        <div class="col-lg-4 logo sr-contact">
+                        <div class="col-lg-4 credit sr-contact">
                             <a href='https://rmotr.com/'>
                                 <img src="{{ url_for('static', filename='img/rmotr_white_on_blank.png') }}" title='Rmotr Rocks!' width='100'/>
                             </a>
                         </div>
-                        <div class="col-lg-4 logo sr-contact">
+                        <div class="col-lg-4 credit sr-contact">
                             <a href='https://www.glassdoor.com/index.htm'>
                                 <img src='https://press-content.glassdoor.com/app/uploads/sites/2/2015/04/GD_logo_Green-2.png' title='Glassdoor Job Search' width='100'/>
                             </a>
                         </div>
-                        <div class="col-lg-4 logo sr-contact">
+                        <div class="col-lg-4 credit sr-contact">
                             <a href='https://hn.algolia.com/api'>
                                 <img src='https://www.algolia.com/static_assets/images/flat2/algolia/algolia256x80_dark-b5d00e91.png' title='Algolia HN API' width='100'/>
                             </a>

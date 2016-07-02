@@ -8,10 +8,11 @@ from bs4 import BeautifulSoup
 from dateutil.relativedelta import relativedelta
 from flask import g
 from hn_search_api_helpers import COMMENTS_FILE, CACHED_COUNTS_FILE, load_json_file
-from bokeh.plotting import figure
-from bokeh.models import NumeralTickFormatter
+from bokeh.plotting import figure, ColumnDataSource
+from bokeh.models import NumeralTickFormatter, HoverTool
 import os.path
 import vincenty
+import collections
 
 # unicode errors with city names so used this SO answer:
 # http://stackoverflow.com/questions/31137552/unicodeencodeerror-ascii-codec-cant-encode-character-at-special-name
@@ -78,19 +79,64 @@ DATE_LIST = get_date_list(datetime.date(2011,4,1))
 # create a dict so we can quickly get the index for each date
 DATE_INDEX = {date:index for index, date in enumerate(DATE_LIST)}
 DATE_LIST_STR = [date.isoformat() for date in DATE_LIST]
-
-def plot_dots_and_line(fig, counts, keyword, color):   
+    
+def plot_dots_and_line(fig, keyword, total_counts, color):   
     '''
-    given: fig for bokeh plot, counts np array, keyword, color
+    given: fig for bokeh plot, keyword, total_counts, color
+    gets the keyword counts for that keyword
+    if keyword is '' that means no keywords were entered
     adds a dot and line plot of counts
     returns: fig
     '''
-    fig.circle(DATE_LIST, counts, color=color, alpha=0.2, size=4)
+    
+    if keyword:
+        counts = keyword_counts(keyword)
+        normalized_counts = counts/ total_counts
+        
+        source = ColumnDataSource(
+            data = {
+                'x': DATE_LIST,
+                'y': normalized_counts,
+                'keyword': [keyword.title()]*len(DATE_LIST),
+                'dates': DATE_LIST_STR,
+                'total_jobs': total_counts,
+                'matching_jobs' : counts
+                }
+            )
+        
+        tips = (
+            ('Keyword','@keyword'),
+            ('Date','@dates'),
+            ('Total Jobs','@total_jobs'),
+            ('Matching Jobs','@matching_jobs')
+        )
+        ordered_tips = collections.OrderedDict(tips)
+    else:
+        normalized_counts = total_counts
+        
+        source = ColumnDataSource(
+            data = {
+                'x': DATE_LIST,
+                'y': normalized_counts,
+                'dates': DATE_LIST_STR,
+                'total_jobs': total_counts,
+                }
+            )
+            
+        tips = (
+            ('Date','@dates'),
+            ('Total Jobs','@total_jobs')
+        )
+        ordered_tips = collections.OrderedDict(tips)
+
+    dots = fig.circle('x','y',source=source, color=color, alpha=0.2, size=8)
+    fig.add_tools(HoverTool(renderers=[dots], tooltips=ordered_tips))
+
     window_size = 3
     window=np.ones(window_size)/float(window_size)
-    counts_avg = np.convolve(counts, window, 'same')
+    counts_avg = np.convolve(normalized_counts, window, 'same')
     
-    # lose the first and last elements due to boundary effect
+    #lose the first and last elements due to boundary effect
     fig.line(
         DATE_LIST[1:-1],
         counts_avg[1:-1],
@@ -98,6 +144,7 @@ def plot_dots_and_line(fig, counts, keyword, color):
         color=color,
         legend=keyword.title()
     )
+    
     return fig
     
 def make_fig(keywords):
@@ -114,7 +161,8 @@ def make_fig(keywords):
     
     fig = figure(
             x_axis_type = "datetime",
-            responsive = True,
+            # responsive = True, # old responsive version, did not scale
+            sizing_mode = 'stretch_both',
             toolbar_location = None
         )
         
@@ -129,13 +177,14 @@ def make_fig(keywords):
     # if no keywords get total posts per month
     if not keywords:
         fig.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
-        counts = np.array(cached_counts['Total Counts'])
-        fig = plot_dots_and_line(fig, counts, 'All', COLORS[0])
-        
+        fig = plot_dots_and_line(fig, '', cached_counts['Total Counts'], COLORS[0])
+     
     for keyword, color in zip(keywords, COLORS):
         # would it be faster to check all keywords for each comment
         # instead of doing one keyword at a time through all comments?
         # if we are doing html-> text for each comment I think so...
+        fig = plot_dots_and_line(fig, keyword, cached_counts['Total Counts'], color)
+        '''
         cached_keywords = cached_counts.keys()
         cached_keywords = [i.lower() for i in cached_keywords]
         
@@ -145,7 +194,8 @@ def make_fig(keywords):
         else:
             counts = keyword_counts(keyword)
             counts /= np.array(cached_counts['Total Counts'])
-        fig = plot_dots_and_line(fig, counts, keyword, color)
+        fig = plot_dots_and_line(fig, counts, keyword, color, cached_counts['Total Counts'])
+        '''
         
     return fig
     
@@ -187,72 +237,6 @@ def keyword_counts(keyword, prefix_suffix_flag=True, case_flag=False):
             index = DATE_INDEX[string_to_date(date)]
             counts[index] += 1
     return counts
-
-# def get_matching_comments_old(comments, keywords):
-#     '''
-#     Return a list of comments from the current and previous month's threads
-#     that match all the keywords
-#     '''
-#     # Find the first day of last month
-#     last_month = datetime.date.today().replace(day=1) + relativedelta(months=-1)
-    
-#     # Build a list of all comments posted since the first of last month
-#     recent_comments = []
-#     for comment in comments:
-#         comment_date = comment['comment_date']
-#         if comment_date >= last_month:
-#             recent_comments.append(comment)
-    
-#     # Build a list of recent comments that match the keywords
-#     matching_comments = []
-    
-#     for comment in recent_comments:
-        
-#         # Get the comment text
-#         text = BeautifulSoup(comment['text'], 'html.parser').get_text()
-#         #text = comment['text']
-#         # Verify that all keywords are found in the comment
-#         if all(keyword.lower() in text.lower() for keyword in keywords):
-        
-#             # Get a comment snippet to use on the display page
-#             comment['snippet'] = _get_snippet(text, keywords)
-            
-#             # Get rating and logo data from Glassdoor data
-#             try:
-#                 company = find_company(text) # define
-#             except:
-#                 company = None
-#             if company is not None:
-#                 comment['rating'] = _get_rating(company) # define
-#                 comment['logo'] = _get_logo(company) # define
-#             else:
-#                 # Use the generic HN logo if there is no company match
-#                 comment['logo'] = HN_LOGO
-            
-#             # Append the comment to the matching comments list
-#             matching_comments.append(comment)
-    
-#     location_match = False
-#     # TODO:
-#     # location_match = get_distances(recent_comments, location)
-#     # Test to see if we can match location.  If so, define comment['distance']
-#     # and set location_match = True.
-    
-#     if location_match:
-#         key = lambda comment: comment['distance']
-#         reverse = False
-#     else:
-#         key = lambda comment: comment['comment_date']
-#         reverse = True
-    
-#     # Sort the matching comments starting with most recent and return the list
-#     matching_comments = sorted(
-#         matching_comments,
-#         key=key,
-#         reverse=reverse
-#     )
-    
-#     return matching_comments
  
 def get_matching_comments(keywords, user_location):
     # Build a list of all comments posted from June 2016
@@ -332,13 +316,7 @@ def get_matching_comments(keywords, user_location):
             # Append the comment to the matching comments list
             matching_comments.append(comment)
     
-    location_match = True
-    # TODO:
-    # location_match = get_distances(recent_comments, location)
-    # Test to see if we can match location.  If so, define comment['distance']
-    # and set location_match = True.
-    
-    if location_match:
+    if all(user_location):
         key = lambda comment: (comment['distance'], comment['comment_date'])
         reverse = False
     else:
