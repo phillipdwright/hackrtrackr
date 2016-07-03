@@ -4,7 +4,8 @@ def get_tables(db):
     '''Get the names of all tables contained in the db'''
     tab_query = "SELECT name FROM sqlite_master WHERE type = 'table';"
     tables = db.execute(tab_query).fetchall()
-    return tables
+    table_names = [table[0] for table in tables]
+    return table_names
 
 
 def get_schemas(db, tables):
@@ -13,8 +14,8 @@ def get_schemas(db, tables):
     schema_query = "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = ?;"
     
     for table in tables:
-        schema = db.execute(schema_query, table).fetchone()
-        schemas.append({'table': table[0], 'schema': schema[0]})
+        schema = db.execute(schema_query, (table,)).fetchone()
+        schemas.append({'table': table, 'schema': schema[0]})
     
     return schemas
 
@@ -49,7 +50,8 @@ if __name__ == '__main__':
     db = sqlite3.connect(db_file)
 
     tables = get_tables(db)
-    print tables
+    print 'Tables:\n'
+    print (table for table in tables)
 
     schemas = get_schemas(db, tables)
     for schema in schemas:
