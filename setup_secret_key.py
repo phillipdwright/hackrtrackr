@@ -1,8 +1,9 @@
 import random
+import os
 from string import ascii_lowercase, digits
 
 CHARS = ascii_lowercase + digits
-SETTINGS = 'hackrtrackr/hackrtrackr/settings.py'
+SETTINGS = os.path.join('hackrtrackr', 'hackrtrackr', 'settings.py')
 
 def generate_key(chars, length):
     new_key = ''
