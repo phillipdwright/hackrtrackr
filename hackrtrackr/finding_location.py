@@ -425,7 +425,8 @@ def check_city_name(line):
         'Stuttgart':['Stuttgart'],
         'Ann Arbor':['Ann Arbor'],
         'Pasadena':['Pasadena'],
-        'Austin':['Austin']
+        'Austin':['Austin'],
+        'The Hague':['The Hague']
         
         
     }

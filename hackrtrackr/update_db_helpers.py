@@ -98,23 +98,16 @@ def guess_company(comment):
             # ignore if it completely matches a location
             # loc_line has location replaced with spaces, so use strip to 
             # see if it is all spaces
-            if possible_locs and len(loc_line.strip() == 0):
+            if possible_locs and len(loc_line.strip()) == 0:
                company_guess = None
             else:
+                split_company = company_guess.split()
+                if len(split_company) >= 10:
+                    company_guess = None
+                elif len(company_guess.strip()) < 3:
+                    company_guess = None
                 break
     return company_guess
-                
-                
-            
-
-    # found_locs = check_line_for_location(first_line)
-    # print found_locs
-    # if comment['id'] in id_to_locations:
-    #     print id_to_locations[comment['id']]
-    # r = raw_input()
-    # if r == 'q':
-    #     sys.exit()
-    
     
 def main_update():
     '''
@@ -128,7 +121,10 @@ def main_update():
     new_comments = select_new_comments(comments, max_db_id)
     
     for comment in new_comments:
-        guess_company(comment)
+        company_guess = guess_company(comment)
+        
+        if company_guess:
+            print company_guess
         #r = raw_input()
         #if r== 'q':
         #    sys.exit()
