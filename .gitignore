@@ -5,17 +5,18 @@ venv3/
 
 *.pyc
 staticfiles
-.env
 db.sqlite3
 
+# Cloud9 trash
 .~c9*
 
 # Phil test files
 phil.sql
 
 # Dave test files
-dave_find_company.py
-dave_test_cache.py
+; dave_find_company.py
+; dave_test_cache.py
+dave/
 
 # Settings file (recreate in production)
 settings.py
