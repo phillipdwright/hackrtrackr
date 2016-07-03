@@ -58,9 +58,18 @@ def guess_company(comment):
     '''
     given: comment
     Looks if first line has delimeters | or -
-    If so it takes everything up to the first non-alphanumeric (allowing periods)
-    If not it will return None
-    Returns the company name
+    If so it will search each section for a possible name
+    For each section it gets text up to the first non-[A-z0-9.]
+    The only heuristic I am using is that if a section completely matches 
+    a location then I move on to the next section
+    (Another possible heuristic I could use is that usually the company name 
+    shows up in a url or email on the comment - but not always)
+    If the possibly company name is longer than 10 words or shorter than 2 chars
+    it will return None
+    Otherwise returns guess for the company name
+    
+    Note - sometimes posts start with job position like Senior Engineer or 
+    something... right now I would mistake these for company names
     '''
 
     soup = BeautifulSoup(comment['text'], "html.parser") 
@@ -74,22 +83,28 @@ def guess_company(comment):
     if '|' not in first_line and '-' not in first_line:
         return None
     
-    # only need to do this split if want to check if first section matches a location...    
-    # p = re.compile('[|-]')
-    # first_section = p.split(first_line)[0]
+    p = re.compile('[|-]')
+    sections = p.split(first_line)
     
-    p = re.compile('[\w \.]+')
-    m = p.match(first_line)
-    if m:
-        company_guess = m.group()
-
-        loc_line, possible_locs = check_line_for_location(company_guess)
+    company_guess = None
+    for section in sections:
+        p = re.compile('[\w \.]+')
+        m = p.match(first_line) # match to make it be start of section
+        if m:
+            company_guess = m.group()
     
-        # ignore if it completely matches a location
-        # loc_line has location replaced with spaces, so use strip to 
-        # see if it is all spaces
-        if possible_locs and len(loc_line.strip() == 0):
-            return None
+            loc_line, possible_locs = check_line_for_location(company_guess)
+        
+            # ignore if it completely matches a location
+            # loc_line has location replaced with spaces, so use strip to 
+            # see if it is all spaces
+            if possible_locs and len(loc_line.strip() == 0):
+               company_guess = None
+            else:
+                break
+    return company_guess
+                
+                
             
 
     # found_locs = check_line_for_location(first_line)

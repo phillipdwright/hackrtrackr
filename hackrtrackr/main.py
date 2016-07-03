@@ -14,12 +14,13 @@ from hackrtrackr import settings
 
 app = Flask(__name__)
 
-
+# Configure the app
 app.debug = settings.DEBUG
 app.config['SECRET_KEY'] = settings.SECRET_KEY
 app.config['DATABASE'] = (0, settings.DATABASE_NAME)
 
 def connect_db(db_name):
+    # Connect to the database
     return sqlite3.connect(db_name)
 
 @app.before_request
@@ -38,7 +39,6 @@ def index():
         
         # Get the location data
         user_location = (request.form['latitude'], request.form['longitude'])
-        print 'Location: ', user_location # For testing purposes
 
         fig = make_fig(keywords)
         

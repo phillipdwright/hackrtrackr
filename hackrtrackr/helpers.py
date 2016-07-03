@@ -84,7 +84,7 @@ DATE_LIST = get_date_list(datetime.date(2011,4,1))
 DATE_INDEX = {date:index for index, date in enumerate(DATE_LIST)}
 DATE_LIST_STR = [date.isoformat() for date in DATE_LIST]
     
-def plot_dots_and_line(fig, keyword, total_counts, color):   
+def plot_dots_and_line(fig, keyword, color):   
     '''
     given: fig for bokeh plot, keyword, total_counts, color
     gets the keyword counts for that keyword
@@ -92,9 +92,8 @@ def plot_dots_and_line(fig, keyword, total_counts, color):
     adds a dot and line plot of counts
     returns: fig
     '''
-    
+    total_counts, counts = keyword_counts(keyword)
     if keyword:
-        counts = keyword_counts(keyword)
         normalized_counts = counts/ total_counts
         
         source = ColumnDataSource(
@@ -116,14 +115,14 @@ def plot_dots_and_line(fig, keyword, total_counts, color):
         )
         ordered_tips = collections.OrderedDict(tips)
     else:
+        #normalized_counts, _ = keyword_counts('this is hacky')
         normalized_counts = total_counts
-        
         source = ColumnDataSource(
             data = {
                 'x': DATE_LIST,
                 'y': normalized_counts,
                 'dates': DATE_LIST_STR,
-                'total_jobs': total_counts,
+                'total_jobs': normalized_counts,
                 }
             )
             
@@ -181,13 +180,13 @@ def make_fig(keywords):
     # if no keywords get total posts per month
     if not keywords:
         fig.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
-        fig = plot_dots_and_line(fig, '', cached_counts['Total Counts'], COLORS[0])
+        fig = plot_dots_and_line(fig, '', COLORS[0])
      
     for keyword, color in zip(keywords, COLORS):
         # would it be faster to check all keywords for each comment
         # instead of doing one keyword at a time through all comments?
         # if we are doing html-> text for each comment I think so...
-        fig = plot_dots_and_line(fig, keyword, cached_counts['Total Counts'], color)
+        fig = plot_dots_and_line(fig, keyword, color)
         '''
         cached_keywords = cached_counts.keys()
         cached_keywords = [i.lower() for i in cached_keywords]
@@ -224,6 +223,7 @@ def keyword_counts(keyword, prefix_suffix_flag=True, case_flag=False):
     comments = cursor.fetchall()
     
     counts = np.zeros(len(DATE_LIST))
+    total_counts = np.zeros(len(DATE_LIST))
     keyword = re.escape(keyword) # escape special regex characters
     #print keyword
     if prefix_suffix_flag:
@@ -237,10 +237,11 @@ def keyword_counts(keyword, prefix_suffix_flag=True, case_flag=False):
     for comment in comments:
         text = comment[1]
         date = comment[0]
+        index = DATE_INDEX[string_to_date(date)]
         if p.search(text):
-            index = DATE_INDEX[string_to_date(date)]
             counts[index] += 1
-    return counts
+        total_counts[index] += 1
+    return total_counts, counts
  
 def get_matching_comments(keywords, user_location):
     # Build a list of all comments posted from June 2016
