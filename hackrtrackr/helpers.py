@@ -115,7 +115,6 @@ def plot_dots_and_line(fig, keyword, color):
         )
         ordered_tips = collections.OrderedDict(tips)
     else:
-        #normalized_counts, _ = keyword_counts('this is hacky')
         normalized_counts = total_counts
         source = ColumnDataSource(
             data = {
@@ -157,10 +156,10 @@ def make_fig(keywords):
     also deals with special case of no keywords to get total posts
     returns: fig
     '''
-    cached_counts_json = load_json_file(CACHED_COUNTS_FILE) # has both keyword counts and total counts
-    cached_counts = {}
-    for entry in cached_counts_json:
-        cached_counts[entry['keyword']] = entry['counts']
+    # cached_counts_json = load_json_file(CACHED_COUNTS_FILE) # has both keyword counts and total counts
+    # cached_counts = {}
+    # for entry in cached_counts_json:
+    #     cached_counts[entry['keyword']] = entry['counts']
     
     fig = figure(
             x_axis_type = "datetime",
