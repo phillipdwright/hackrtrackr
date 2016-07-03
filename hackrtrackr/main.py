@@ -12,16 +12,18 @@ from bokeh.util.string import encode_utf8
 from hackrtrackr.helpers import COLORS, get_matching_comments, make_fig
 from hackrtrackr import settings
 
-# DATABASE = 'test_db/testDB12.db' # maybe put this in config file
-
 app = Flask(__name__)
+
+
+app.debug = settings.DEBUG
+app.config['SECRET_KEY'] = settings.SECRET_KEY
+app.config['DATABASE'] = (0, settings.DATABASE_NAME)
 
 def connect_db(db_name):
     return sqlite3.connect(db_name)
 
 @app.before_request
 def before_request():
-    # g.db = sqlite3.connect(DATABASE)
     g.db = connect_db(app.config['DATABASE'][1])
     # we could put stuff here about checking if json database is up-to-date
 
@@ -67,9 +69,6 @@ def index():
     return render_template('index.html')
     
 if __name__ == '__main__':
-    app.debug = settings.DEBUG
-    app.config['SECRET_KEY'] = settings.SECRET_KEY
-    app.config['DATABASE'] = (0, settings.DATABASE_NAME)
 
     host = os.environ.get('IP', '0.0.0.0')
     port = int(os.environ.get('PORT', 8080))

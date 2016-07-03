@@ -1,11 +1,14 @@
+*.pyc
+staticfiles
+db.sqlite3
+
+# Settings file (recreate in production)
+settings.py
+
 # Virtualenvs
 venv/
 bokeh-venv/
 venv3/
-
-*.pyc
-staticfiles
-db.sqlite3
 
 # Cloud9 trash
 .~c9*
@@ -14,13 +17,10 @@ db.sqlite3
 phil.sql
 
 # Dave test files
-; dave_find_company.py
-; dave_test_cache.py
-dave/
+dave_find_company.py
+dave_test_cache.py
 
-# Settings file (recreate in production)
-settings.py
-
+# Old data files we are now ignoring
 heroku/
 old_data/
 data/
