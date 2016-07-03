@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
     tables = get_tables(db)
     print 'Tables:\n'
-    print (table for table in tables)
+    print [table for table in tables]
 
     schemas = get_schemas(db, tables)
     for schema in schemas:

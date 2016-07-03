@@ -1,12 +1,12 @@
 import sqlite3
 from hn_search_api_helpers import get_thread_data_by_user, \
-get_comments_from_thread, dump_json_file
+get_comments_from_thread, dump_json_file, call_api
 from settings import DATABASE_NAME
 import datetime
 import re
 from bs4 import BeautifulSoup
 import sys
-from finding_location import check_line_for_location
+from finding_location import check_line_for_location, check_comment_for_location
 '''
 Functions that are used for updating the DB
 '''
@@ -83,15 +83,17 @@ def guess_company(comment):
     if '|' not in first_line and '-' not in first_line:
         return None
     
-    p = re.compile('[|-]')
-    sections = p.split(first_line)
+    delimeters = re.compile('[|-]')
+    sections = delimeters.split(first_line)
     
+    job_descriptors = re.compile('(^|\W)(Engineer|Senior|Developer|Onsite|Fulltime)($|\W)', re.IGNORECASE)
+    opener = re.compile('[\w \.]+')
     company_guess = None
     for section in sections:
-        p = re.compile('[\w \.]+')
-        m = p.match(first_line) # match to make it be start of section
+        
+        m = opener.match(section) # match to make it be start of section
         if m:
-            company_guess = m.group()
+            company_guess = m.group().strip()
     
             loc_line, possible_locs = check_line_for_location(company_guess)
         
@@ -99,15 +101,49 @@ def guess_company(comment):
             # loc_line has location replaced with spaces, so use strip to 
             # see if it is all spaces
             if possible_locs and len(loc_line.strip()) == 0:
-               company_guess = None
+                company_guess = None
+            elif job_descriptors.search(section):
+                company_guess = None
             else:
                 split_company = company_guess.split()
                 if len(split_company) >= 10:
                     company_guess = None
-                elif len(company_guess.strip()) < 3:
+                elif len(company_guess) < 3:
                     company_guess = None
                 break
     return company_guess
+    
+def get_urls(comment):
+    '''
+    given: comment
+    returns: list of all urls by regex match
+    '''
+    
+    urls = []
+    soup = BeautifulSoup(comment['text'])
+    lines = soup.findAll(text=True)
+    for line in lines:
+        for m in p.finditer(line):
+            if m.group(2) not in urls:
+                urls.append(m.group(2))
+    return urls
+    
+def search_glass_door(company_guess, urls):
+    '''
+    given: a guess for the company name and urls from comment text
+    searches glassdoor API and looks for exact match or url match
+    returns a dict of 
+    {
+        glassdoor_id:
+        industry:
+        name:
+        numberOfRatings:
+        overallRating:
+        squareLogo:
+        website:
+    }
+    '''
+    
     
 def main_update():
     '''
@@ -120,14 +156,24 @@ def main_update():
     
     new_comments = select_new_comments(comments, max_db_id)
     
+    if new_comments:
+        # compile this regex once since it is slow if compile it for each comment
+        url_regex = re.compile('(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?', re.IGNORECASE)
+    
+    
     for comment in new_comments:
         company_guess = guess_company(comment)
         
         if company_guess:
-            print company_guess
-        #r = raw_input()
-        #if r== 'q':
-        #    sys.exit()
+            comments_urls = get_urls(comment)
+            
+            
+        
+        locations = check_comment_for_location(comment)
+        
+        
+        
+        
     
     # best guess at company name and location
     

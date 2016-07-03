@@ -14,6 +14,8 @@ import os.path
 import vincenty
 import collections
 
+from hackrtrackr import settings
+
 # unicode errors with city names so used this SO answer:
 # http://stackoverflow.com/questions/31137552/unicodeencodeerror-ascii-codec-cant-encode-character-at-special-name
 import sys
@@ -55,7 +57,7 @@ HN_LOGO = os.path.join('img', 'logos', 'hn_logo.png')
 GD_BASE = 'https://www.glassdoor.com/Overview/-EI_IE{}.htm'
 
 # Company logo files, and web file path for logos to be used by Flask
-LOGO_FILE = os.path.join('hackrtrackr', 'static', 'img', 'logos', '{}.png')
+LOGO_FILE = os.path.join(settings.BASE_DIR, 'hackrtrackr', 'static', 'img', 'logos', '{}.png')
 LOGO_IMG = os.path.join('img', 'logos', '{}.png')
 
 def string_to_date(string_date):
@@ -387,11 +389,9 @@ def _get_rating(comment):
     id_ = comment['glassdoor_id']
     query = "SELECT overallRating FROM company WHERE id == ?"
     cursor = g.db.execute(query, (id_,))
-    #print "id:", id_
     
     rating = cursor.fetchone()[0]
 
-    #print "rating:", rating
     if rating:
         # Get conservative integer estimates for each value
         stars = {
@@ -497,6 +497,8 @@ def _keyword_check(comment, patterns):
                         marked_text[start:end] + \
                         '</font>' + \
                         marked_text[end:]
+                        
+            # marked_text =
     comment['marked_text'] = marked_text
     
     return comment, total_keywords_found

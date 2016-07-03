@@ -71,9 +71,16 @@ def dump_json_file(list_dicts, filename):
 class APIClientErrro(Exception):
     pass
 
-def call_api(url, timeout = 30):
+def call_api(url, timeout = 30, user_agent_flag = False):
+    if user_agent_flag:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) \
+            AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+        }
+    else:
+        headers = {}
     try:
-        resp = requests.request('GET', url, timeout=timeout)
+        resp = requests.request('GET', url, timeout=timeout, headers=headers)
     except requests.exceptions.ConnectionError:
         msg = 'Could not connect to the API at {}'.format(url)
         raise APIClientErrro(msg)
