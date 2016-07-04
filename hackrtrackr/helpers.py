@@ -50,6 +50,9 @@ HEX_COLORS = (
     '#95B265'
     )
 
+BLUE = '#0039E6'
+RED_ORANGE = '#EF502F'
+
 # Filename for HN logo, used as default
 HN_LOGO = os.path.join('img', 'logos', 'hn_logo.png')
 
@@ -72,7 +75,7 @@ def get_date_list(date):
     Returns list of dates (YYYY-MM-DD) up to most recent month
     '''
     end_date = datetime.date.today().replace(day=1)
-    end_date = datetime.date(2016,6,1) # don't want july showing up in plot
+    end_date = datetime.date(2016,7,1) # don't want july showing up in plot
     date_list = []
     while date <= end_date:
         date_list.append(date)
@@ -247,7 +250,7 @@ def keyword_counts(keyword, prefix_suffix_flag=True, case_flag=False):
 def get_matching_comments(keywords, user_location):
     # Build a list of all comments posted from June 2016
     current_month = datetime.date.today().replace(day=1)
-    current_month = datetime.date(2016,6,1).isoformat() # take this out if auto-update is working
+    current_month = datetime.date(2016,7,1).isoformat() # take this out if auto-update is working
     
     sql_command = 'SELECT * FROM posts WHERE thread_date == ?'
     cursor = g.db.execute(sql_command, (current_month,))
@@ -284,13 +287,21 @@ def get_matching_comments(keywords, user_location):
                 comment['distance'] = _get_distance(comment['id'], user_location)
         
             location = _get_location(comment['id'], remote)
-                    
+            
             if location:
                 comment['location'] = location
                 
             #comment['distance'] = _get_distance(comment['id'], user_location)
-                
-            comment['snippet'] = ' | '.join(i for i in (comment['company'], location) if i)
+            
+            # If company name is None then just grab the first part of the text
+            if comment['company'] is None:
+                company_snippet = comment['pure_text'][:25] + '..'
+            else:
+                company_snippet = comment['company']
+            comment['snippet'] = ' | '.join(i for i in (company_snippet, location) if i)
+            
+            if remote:
+                comment['snippet'] += '<br><font color="{}">REMOTE</font>'.format(RED_ORANGE)
             
             if comment['glassdoor_id']:
                 # I need to fix the database so only the ones we have logos
@@ -492,13 +503,18 @@ def _keyword_check(comment, patterns):
                 end -= 1
 
             # insert the highlighting tags
-            marked_text = marked_text[:start] + \
-                        '<font color="{}">'.format(color) + \
-                        marked_text[start:end] + \
-                        '</font>' + \
-                        marked_text[end:]
+            # marked_text = marked_text[:start] + \
+            #             '<font color="{}">'.format(color) + \
+            #             marked_text[start:end] + \
+            #             '</font>' + \
+            #             marked_text[end:]
                         
-            # marked_text =
+            marked_text = '{}<font color="{}">{}</font>{}'.format(
+                marked_text[:start],
+                color,
+                marked_text[start:end],
+                marked_text[end:]
+            )
     comment['marked_text'] = marked_text
     
     return comment, total_keywords_found

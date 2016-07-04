@@ -476,6 +476,48 @@ def check_line_for_location(line):
             locs += found_locs
     return line, locs
     
+def check_comment_for_location(comment):
+    '''
+    returns list of locations found in comment
+    '''
+    soup = BeautifulSoup(comment['text'], "html.parser")
+    locs = []   
+    
+    for pos, i in enumerate(soup.findAll('p')):
+        line = ' '.join(i.findAll(text=True))
+        line, found_locs = check_city_st_2(line)
+        if found_locs:
+            locs += found_locs
+        line, found_locs = check_countries_regex(line)
+        if found_locs:
+            locs += found_locs
+        line, found_locs = check_city_name(line)
+        if found_locs:
+            locs += found_locs
+        line, found_locs = check_city_state(line)
+        if found_locs:
+            locs += found_locs
+        
+        if not locs:
+            line, found_locs = check_state_only(line)
+            if found_locs:
+                locs += found_locs
+            line, found_locs = check_country_only(line)
+            if found_locs:
+                locs += found_locs
+        
+        if locs:
+            break
+        if 'remote' in line.lower():
+            break # stop if it is a remote job
+        
+    loc_strings = []
+    for loc in locs:
+        t = (i for i in loc if i)
+        s = ' '.join(t)
+        if s not in loc_strings:
+            loc_strings.append(s)
+    return loc_strings
     
 def check_locations(json_file):
     '''

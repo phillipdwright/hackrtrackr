@@ -11,13 +11,11 @@ from finding_location import check_line_for_location, check_comment_for_location
 Functions that are used for updating the DB
 '''
 
-def get_max_db_id():
+def get_max_db_id(db):
     '''
+    given: database connection
     returns: max id from the posts table
     '''
-    #db = sqlite3.connect(DATABASE_NAME)
-    db = sqlite3.connect('../test_db/testDB12.db')
-    
     sql_command = 'SELECT MAX(id) FROM posts'
     cursor = db.execute(sql_command)
     max_id = cursor.fetchone()[0]
@@ -113,43 +111,232 @@ def guess_company(comment):
                 break
     return company_guess
     
-def get_urls(comment):
+def get_urls(url_regex, comment):
     '''
     given: comment
     returns: list of all urls by regex match
     '''
-    
     urls = []
     soup = BeautifulSoup(comment['text'])
     lines = soup.findAll(text=True)
     for line in lines:
-        for m in p.finditer(line):
+        for m in url_regex.finditer(line):
             if m.group(2) not in urls:
                 urls.append(m.group(2))
     return urls
-    
-def search_glass_door(company_guess, urls):
+
+def compare_urls(url1, url2):
     '''
-    given: a guess for the company name and urls from comment text
-    searches glassdoor API and looks for exact match or url match
+    given: 2 urls
+    checks if they match
+    also will call a match if they include the same word longer than 3 letters and
+    also have the same suffix (ie .com or .org, etc)
+    returns: boolean
+    '''
+    if len(url1) == 0 or len(url2) == 0:
+        return False
+        
+    # complete match
+    if url1 == url2:
+        return True
+
+    # remove prefix stuff and look for a match
+    url1 = url1.replace('http://','')
+    url2 = url2.replace('http://','')
+    url1 = url1.replace('www.','')
+    url2 = url2.replace('www.','')
+    if url1 == url2:
+        return True
+        
+    # more relaxed - look for any word > 3letters matching, but the .com end has to match
+    url1_set = set(url1.split('.')[:-1])
+    url2_set = set(url2.split('.')[:-1])
+    if url1.split('.')[-1] == url2.split('.')[-1]:
+        intersection = url1_set & url2_set
+        for item in intersection:
+            if len(item) > 3:
+                return True
+    return False
+    
+def get_glassdoor_fields(employer):
+    '''
+    given: an employer from glassdoor api
+    returns: dict with id, name, numberOfRatings, website, overallRating, 
+    industry, squareLogo
+    '''
+    id = employer['id']
+    name = employer['name']
+    numberOfRatings = employer['numberOfRatings']
+    website = None
+    overallRating = None
+    industry = None
+    squareLogo = None
+    
+    if 'overallRating' in employer and numberOfRatings > 1:
+        overallRating = employer["overallRating"]
+    if 'industry' in employer:
+        industry = employer['industry']
+    if 'website' in employer:
+        website = employer['website']
+    if 'squareLogo' in employer and employer['squareLogo']:
+        squareLogo = employer['id']
+        get_logo(employer['id'], employer['squareLogo'])
+        
+    return dict(id=id,
+        name=name,
+        website=website,
+        overallRating=overallRating,
+        numberOfRatings=numberOfRatings,
+        industry=industry,
+        squareLogo=squareLogo,
+        )
+        
+def get_logo(glassdoor_id, url):
+    '''
+    given: glassdoor_id and squareLogo url to the logo on glassdoor's site
+    if we don't already have the url then download it
+    '''
+    print 'In get_logo to download the logo {} for glassdoor id {}'.format(url, glassdoor_id)
+    return True
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+ 
+    url_suffix = url.split('.')[-1]
+    # *** NOT SURE HOW THIS FILE SYSTEM WILL BE ***
+    img_filename = '/img/logos/{}.{}'.format(glassdoor_id, url_suffix)
+    if os.path.isfile(img_filename):
+        return True # already got that image
+    
+    with open(img_filename,'wb') as FH:
+        FH.write(requests.get(url, headers=headers).content)
+        #print 'Wrote {}'.format(img_filename)
+    
+def search_glassdoor(db, company_guess, urls, stringency_flag = True):
+    '''
+    given: db, a guess for the company name, and urls from comment text
+    searches glassdoor API and looks for match
+    If stringency_flag is True it will only take an exactMatch or website match
+    (and it will prioritize the website match)
+    If stringency_flag is False it will take the top hit even if it is not an 
+    exactMatch
     returns a dict of 
-    {
-        glassdoor_id:
-        industry:
-        name:
-        numberOfRatings:
-        overallRating:
-        squareLogo:
-        website:
-    }
+    If there is a glassdoor match, it will write that info to the company table
+    It will return glassdoor_id (None if no match found)
     '''
     
+    api_url = 'http://api.glassdoor.com/api/api.htm?t.p=72730&t.k=kWVAIhFKJam&\
+        userip=104.131.86.71&format=json&v=1&action=employers&q={}'.format(company_guess)
+    # replace my local ip with server ip: 104.131.86.71
+    data = call_api(api_url, timeout = 30, user_agent_flag = True)
+    glassdoor_response = data['response']
+    
+    glassdoor_id = None
+    records_found = glassdoor_response['totalRecordCount']
+    exactMatch = False
+    websiteMatch = False
+    matches_agree = False
+    matched_employer = None
+    for pos, employer in enumerate(glassdoor_response['employers']):
+        website = employer['website']
+        
+        # if there is an exactMatch it will always be first employer
+        if employer['exactMatch'] == True:
+            exactMatch = True  
+            matched_employer = employer
+            
+        for url in urls:
+            if compare_urls(url, website):
+                matched_employer = employer
+                websiteMatch = True
+                if pos == 0 and exactMatch:
+                    matches_agree = True
+                break
+                
+        if websiteMatch: # no need to keep searching after website match
+            break
+    
+    # return top hit if stringency_flag is False
+    if not stringency_flag and records_found > 0:
+        glassdoor_data = get_glassdoor_fields(employer[0])
+        
+    # now get the data from the employer if there was a match
+    if matched_employer:
+        glassdoor_data = get_glassdoor_fields(matched_employer)
+        glassdoor_id = glassdoor_data['id']
+        print 'Glassdoor match to {}'.format(glassdoor_data['name'])
+        # see if there is already that ID in the company table
+        # This is not best way to do it so fix this later...
+        sql_command = 'SELECT Count(*) FROM company WHERE id == ?'
+        cursor = db.execute(sql_command, (glassdoor_data['id'],))
+        n_hits = cursor.fetchone()[0]
+        if n_hits == 0:
+            print 'It is not in the database so we would add it now'
+            # we don't have it so add it to the company table
+            # Use update_table from db_config
+            # import the table company (make sure I don't have a company variable!)
+            # send data as json of [{glassdoor_data}]
+        else:
+            print 'It was already in the database'
+              
+    return glassdoor_id
+    
+def geocode_locations(comment):
+    '''
+    given: comment with 'locations' key that is list of locations
+    geocode each location and write them as rows to id_geocode table
+    
+    Suggestion for improvement - have a locations table in the database
+    so we can look up common locations instead of geocoding them again
+    Since a few cities are very common - San Francisco, New York, London
+    '''
+    locs = entry['locations']
+    for loc in locs:
+        loc = loc.lower()
+        if loc in already_have:
+            continue
+        
+        if loc not in seen_locs:
+            seen_locs.add(loc)
+            tries = 2
+            print loc
+            while tries < 10:
+                print 'try {}'.format(tries)
+                g = geocoder.google(loc)
+                total_requests += 1
+                if total_requests > 2000:
+                    sys.exit('total requests too much')
+                if any([g.city, g.state, g.country]):
+                    break
+                time.sleep(tries)
+                tries += 1
+            if not any([g.city, g.state, g.country]):
+                print 'could not get ', entry
+                sys.exit()
+            print 'Got {}'.format(loc)
+            time.sleep(2)
+            
+            city, state, country = g.city, g.state, g.country
+            if not city:
+                city = ''
+            if not state:
+                state = ''
+            if not country:
+                country = ''
+            d = dict(city=g.city, state=g.state, country=g.country, latlng = g.latlng)
+            new_entry = {loc:d}
+            already_have_json.append(new_entry)
+            with open('location_geocode.json', 'w') as FHOUT:
+                json.dump(already_have_json, FHOUT)
+            already_have.add(loc)
     
 def main_update():
     '''
     Main function for updating db
     '''
-    max_db_id = get_max_db_id()
+    #db = sqlite3.connect(DATABASE_NAME)
+    # *** I'm confused about how to do database name stuff... need help with that ***
+    db = sqlite3.connect('../test_db/testDB12.db')
+    
+    max_db_id = get_max_db_id(db)
     
     comments = get_current_month_comments()
     # [{id, thread_id, text, thread_date, comment_date}]
@@ -160,29 +347,30 @@ def main_update():
         # compile this regex once since it is slow if compile it for each comment
         url_regex = re.compile('(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?', re.IGNORECASE)
     
-    
     for comment in new_comments:
         company_guess = guess_company(comment)
         
+        glassdoor_id = None
         if company_guess:
-            comments_urls = get_urls(comment)
+            comment_urls = get_urls(url_regex, comment)
+            glassdoor_id = search_glassdoor(db, company_guess, comment_urls, stringency_flag = True)
             
-            
-        
         locations = check_comment_for_location(comment)
         
+        comment['company'] = company_guess
+        comment['glassdoor_id'] = glassdoor_id
+        # *** WRITE comment to posts table here ***
         
+        comment['locations'] = locations
+        geocode_locations(comment)
         
-        
+        print 'Company guess: ',company_guess
+        print 'Comment urls: ',comment_urls
+        print 'Locations: ',locations
+        print 'Glassdoor id: ',glassdoor_id
+            
+        r = raw_input()
+        if r == 'q':
+            sys.exit()
     
-    # best guess at company name and location
-    
-    # get google location data
-    
-    # get glassdoor data
-        # - first get all urls in post to compare to glassdoor
-    
-    # update databases
-    
-    #dump_json_file(comments, 'July_2016_comments.json')
 main_update()
