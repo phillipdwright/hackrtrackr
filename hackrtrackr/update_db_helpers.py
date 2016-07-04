@@ -7,6 +7,8 @@ import re
 from bs4 import BeautifulSoup
 import sys
 from finding_location import check_line_for_location, check_comment_for_location
+import geocoder
+import time
 '''
 Functions that are used for updating the DB
 '''
@@ -288,45 +290,43 @@ def geocode_locations(comment):
     so we can look up common locations instead of geocoding them again
     Since a few cities are very common - San Francisco, New York, London
     '''
-    locs = entry['locations']
-    for loc in locs:
-        loc = loc.lower()
-        if loc in already_have:
+    unique_locations = [] # avoid adding multiples of same location
+    locations = comment['locations']
+    for location in locations:
+        location = location.lower()
+        
+        tries = 2
+        print location
+        while tries < 10:
+            g = geocoder.google(location)
+            if any([g.city, g.state, g.country]):
+                break
+            time.sleep(tries)
+            tries += 1
+        if not any([g.city, g.state, g.country]):
+            # Could not geocode - add to logger
             continue
         
-        if loc not in seen_locs:
-            seen_locs.add(loc)
-            tries = 2
-            print loc
-            while tries < 10:
-                print 'try {}'.format(tries)
-                g = geocoder.google(loc)
-                total_requests += 1
-                if total_requests > 2000:
-                    sys.exit('total requests too much')
-                if any([g.city, g.state, g.country]):
-                    break
-                time.sleep(tries)
-                tries += 1
-            if not any([g.city, g.state, g.country]):
-                print 'could not get ', entry
-                sys.exit()
-            print 'Got {}'.format(loc)
-            time.sleep(2)
-            
-            city, state, country = g.city, g.state, g.country
-            if not city:
-                city = ''
-            if not state:
-                state = ''
-            if not country:
-                country = ''
-            d = dict(city=g.city, state=g.state, country=g.country, latlng = g.latlng)
-            new_entry = {loc:d}
-            already_have_json.append(new_entry)
-            with open('location_geocode.json', 'w') as FHOUT:
-                json.dump(already_have_json, FHOUT)
-            already_have.add(loc)
+        city, state, country = g.city, g.state, g.country
+        if not city:
+            city = ''
+        if not state:
+            state = ''
+        if not country:
+            country = ''
+        d = dict(id=comment['id'],
+                city=g.city, 
+                state=g.state, 
+                country=g.country, 
+                latlng = g.latlng
+            )
+        if d not in unique_locations:
+            unique_locations.append(d)
+    
+    for row in unique_locations:
+        print 'Inserting {} {} into id_geocode'.format(row['id'], row['city'])
+        # *** INSERT THIS LOCATION INTO THE ID_GEOCODE TABLE ***
+
     
 def main_update():
     '''
@@ -359,7 +359,7 @@ def main_update():
         
         comment['company'] = company_guess
         comment['glassdoor_id'] = glassdoor_id
-        # *** WRITE comment to posts table here ***
+        # *** WRITE [comment] to posts table here ***
         
         comment['locations'] = locations
         geocode_locations(comment)
@@ -372,5 +372,7 @@ def main_update():
         r = raw_input()
         if r == 'q':
             sys.exit()
+            
+        #time.sleep(2) # to prevent too quick API calls
     
 main_update()

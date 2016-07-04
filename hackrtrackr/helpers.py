@@ -543,12 +543,3 @@ def _get_distance(id_, user_latlng):
         if distance < closest_distance:
             closest_distance = distance
     return closest_distance
-        
-    
-    
-    
-    
-    
-
-    
-    
