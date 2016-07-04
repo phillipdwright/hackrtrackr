@@ -22,6 +22,24 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+KEYWORD_DICT = {
+    'c':re.compile('(^|\W)(C)($|\W)'),
+    'go':re.compile('(^|\W)(Go)($|\W)'),
+    'objective-c':re.compile('(^|\W)(Objective-C|Objective C)($|\W)', re.IGNORECASE),
+    'R':re.compile('(^|\W)(R)($|\W)'),
+    'HTML':re.compile('(^|\W)(HTML|HTML5)($|\W)'),
+    'CSS':re.compile('(^|\W)(CSS)($|\W)'),
+    'Frontend':re.compile('(^|\W)(Frontend|Front-end|Front end)($|\W)', re.IGNORECASE),
+    'Backend':re.compile('(^|\W)(Backend|Back-end|Back end)($|\W)', re.IGNORECASE),
+    'Remote':re.compile('(\W|^)(?<!no )(remote)(\W|$)', re.IGNORECASE), # ?<! is neg lookbehind
+    'Onsite':re.compile('(^|\W)(Onsite|On-site|On site)($|\W)', re.IGNORECASE),
+    'Internship':re.compile('(^|\W)(Intern|Interns|Internship|Internships)($|\W)', re.IGNORECASE),
+    'Full-time':re.compile('(^|\W)(Full time|Full-time|Fulltime)($|\W)', re.IGNORECASE),
+    'Visa':re.compile('(\W|^)(?<!no )(Visa|Visas)(\W|$)', re.IGNORECASE),
+    'H1B':re.compile('(\W|^)(H1B|H1Bs)(\W|$)', re.IGNORECASE),
+    'DevOps':re.compile('(\W|^)(DevOps|Dev-ops|Dev ops)(\W|$)', re.IGNORECASE)
+}
+
 # taken from here selecting 12, qualitative colors: http://colorbrewer2.org/
 COLORS = (
         (0, 57, 230), # blue, saturated high 
@@ -49,9 +67,6 @@ HEX_COLORS = (
     '#7B738E',
     '#95B265'
     )
-
-BLUE = '#0039E6'
-RED_ORANGE = '#EF502F'
 
 # Filename for HN logo, used as default
 HN_LOGO = os.path.join('img', 'logos', 'hn_logo.png')
@@ -301,7 +316,7 @@ def get_matching_comments(keywords, user_location):
             comment['snippet'] = ' | '.join(i for i in (company_snippet, location) if i)
             
             if remote:
-                comment['snippet'] += '<br><font color="{}">REMOTE</font>'.format(RED_ORANGE)
+                comment['snippet'] += '<br>REMOTE'
             
             if comment['glassdoor_id']:
                 # I need to fix the database so only the ones we have logos
