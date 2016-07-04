@@ -2,26 +2,13 @@
 
 PRAGMA foreign_keys = ON;
 
---DROP TABLE if exists posts;
-CREATE TABLE posts(
-  comment_date DATE,
-  company TEXT,
-  glassdoor_id TEXT,
-  id INTERGER,
-  text TEXT,
-  thread_date DATE,
-  thread_id INTEGER
-);
-
 --DROP TABLE if exists company;
 CREATE TABLE company(
-  con_review TEXT,
   id INTEGER,
   industry TEXT,
   name TEXT,
   numberOfRatings TEXT,
   overallRating INTEGER,
-  pro_review TEXT,
   squareLogo INTEGER,
   website TEXT
 );
@@ -34,5 +21,16 @@ CREATE TABLE id_geocode(
   lat FLOAT,
   lng FLOAT,
   state TEXT
+);
+
+--DROP TABLE if exists posts;
+CREATE TABLE posts(
+  comment_date DATE,
+  company TEXT,
+  glassdoor_id TEXT,
+  id INTEGER,
+  text TEXT,
+  thread_date DATE,
+  thread_id INTEGER
 );
 

@@ -18,6 +18,7 @@ phil.sql
 
 # Dave test files
 dave_find_company.py
+weird_bug.txt
 dave_test*
 
 # Old data files we are now ignoring
@@ -29,3 +30,7 @@ old_logos/
 
 # Test databases
 test*.db
+
+# Log files
+*.log
+

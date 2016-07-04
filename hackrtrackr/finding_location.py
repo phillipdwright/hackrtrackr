@@ -1,5 +1,6 @@
 import re
 import json
+import os
 from bs4 import BeautifulSoup
 import datetime
 import collections
@@ -7,7 +8,18 @@ import geocoder
 import sys
 import time
 
-with open('../data/cities/city_to_country.json', 'r') as FH:
+from hackrtrackr import settings
+
+GEO = os.path.join(settings.BASE_DIR, 'dbutils', 'data', 'geo')
+US_CITIES_FILE = os.path.join(GEO, 'us_cities.txt') # Line 52
+US_STATES_FILE = os.path.join(GEO, 'us_states.txt') # Line 62
+COUNTRIES_FILE = os.path.join(GEO, 'countries.txt') # Line 72
+CANADA_PROVINCES_FILE = os.path.join(GEO, 'canada_provinces.txt') # Line 82
+CITY_TO_COUNTRY_FILE = os.path.join(GEO, 'city_to_country.json') # Line 21
+
+
+with open(CITY_TO_COUNTRY_FILE, 'r') as FH:
+# with open('../data/cities/city_to_country.json', 'r') as FH:
     json_data = json.load(FH)
     
 city_to_country = json_data[0]
@@ -37,7 +49,8 @@ city_dict = {'SF': ['SF', 'San Francisco', 'San Fran', 'Frisco', 'S.F.'],
 
 
 us_city_states = []
-with open('../data/cities/us_cities.txt') as FH:
+#with open('../data/cities/us_cities.txt') as FH:
+with open(US_CITIES_FILE) as FH:
     for line in FH:
         line = line.rstrip()
         l = line.split('\t')
@@ -46,7 +59,8 @@ with open('../data/cities/us_cities.txt') as FH:
         
 us_states_full_name = []
 us_abbrev_to_state = {}
-with open('../data/us_states.txt') as FH:
+#with open('../data/us_states.txt') as FH:
+with open(US_STATES_FILE) as FH:
     for line in FH:
         line = line.rstrip()
         l = line.split('\t')
@@ -55,7 +69,8 @@ with open('../data/us_states.txt') as FH:
         us_states_full_name.append(state)
         
 countries = []
-with open('../data/cities/countries.txt') as FH:
+#with open('../data/cities/countries.txt') as FH:
+with open(COUNTRIES_FILE) as FH:
     for line in FH:
         line = line.rstrip()
         l = line.split('\t')
@@ -64,7 +79,8 @@ with open('../data/cities/countries.txt') as FH:
         countries.append(country)
         
 canada_abbrev_to_state = {}
-with open('../data/canada_provinces.txt') as FH:
+#with open('../data/canada_provinces.txt') as FH:
+with open(CANADA_PROVINCES_FILE) as FH:
     for line in FH:
         line = line.rstrip()
         l = line.split('\t')

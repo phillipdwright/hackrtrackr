@@ -1,6 +1,6 @@
 import sqlite3
 from hn_search_api_helpers import get_thread_data_by_user, \
-get_comments_from_thread, dump_json_file, call_api
+get_comments_from_thread, call_api
 from settings import DATABASE_NAME
 import datetime
 import re
@@ -9,9 +9,23 @@ import sys
 from finding_location import check_line_for_location, check_comment_for_location
 import geocoder
 import time
+#from main import app, connect_db
+import logging
+from operator import itemgetter
+
+from dbutils.db_config import update_table
+from dbutils.setup_db import posts, company, id_geocode
+#from db_config import update_table
 '''
 Functions that are used for updating the DB
 '''
+
+current_month = datetime.date.today().strftime('%b_%Y')
+LOGGING_FILENAME = 'db_update_{}.log'.format(current_month)
+LOGGING_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
+logging.basicConfig(format=LOGGING_FORMAT, filename=LOGGING_FILENAME, level=logging.DEBUG)
+
+DATABASE_FILE = 'test_db/test_autoupdate.db'
 
 def get_max_db_id(db):
     '''
@@ -30,11 +44,10 @@ def get_current_month_comments():
     returns: comments as json list of dicts
     '''
     current_date = datetime.date.today().replace(day=1)
-    current_date_iso = current_date
 
     threads = get_thread_data_by_user('whoishiring')
     for thread in threads:
-        if thread['created'] == current_date_iso:
+        if thread['created'] == current_date:
             current_thread = thread
             break
     else:
@@ -46,13 +59,17 @@ def get_current_month_comments():
 def select_new_comments(comments, max_db_id):
     '''
     given: comments and max_db_id
-    returns: comments that have higher id than max_db_id
+    returns: comments that have higher id than max_db_id, sorted oldest->newest
     '''
     new_comments = []
     for comment in comments:
         if comment['id'] > max_db_id:
             new_comments.append(comment.copy())
-    return new_comments
+            
+    sorted_new_comments = sorted(new_comments, key=itemgetter('id'))
+    # for comment in sorted_new_comments:
+    #     print comment['id'],
+    return sorted_new_comments
     
 def guess_company(comment):
     '''
@@ -264,7 +281,10 @@ def search_glassdoor(db, company_guess, urls, stringency_flag = True):
     if matched_employer:
         glassdoor_data = get_glassdoor_fields(matched_employer)
         glassdoor_id = glassdoor_data['id']
+        logging.info('Made a glassdoor match: {}, glassdoor ID = {}'\
+            .format(glassdoor_data['name'], glassdoor_data['id']))
         print 'Glassdoor match to {}'.format(glassdoor_data['name'])
+        
         # see if there is already that ID in the company table
         # This is not best way to do it so fix this later...
         sql_command = 'SELECT Count(*) FROM company WHERE id == ?'
@@ -272,6 +292,18 @@ def search_glassdoor(db, company_guess, urls, stringency_flag = True):
         n_hits = cursor.fetchone()[0]
         if n_hits == 0:
             print 'It is not in the database so we would add it now'
+            
+            conn = sqlite3.connect(DATABASE_FILE)
+            update_table(company, [glassdoor_data], setup = True, conn = conn)
+            
+            sql_command = 'SELECT Count(*) FROM company WHERE id == ?'
+            cursor = db.execute(sql_command, (glassdoor_data['id'],))
+            n_hits = cursor.fetchone()[0]
+            if n_hits == 1:
+                logging.info('Added ({}, {}) company table'.format\
+                (glassdoor_data['name'], glassdoor_data['id']))
+            elif n_hits == 0:
+                logging.error('({}, {}) was not added to company table'.format)
             # we don't have it so add it to the company table
             # Use update_table from db_config
             # import the table company (make sure I don't have a company variable!)
@@ -280,6 +312,15 @@ def search_glassdoor(db, company_guess, urls, stringency_flag = True):
             print 'It was already in the database'
               
     return glassdoor_id
+    
+    '''
+    conn = sqlite3.connect('test_db/test_autoupdate.db')
+        update_table(posts, [comment], setup = True, conn = conn)
+        sql_command = 'SELECT * FROM posts WHERE id == ?'
+        cursor = db.execute(sql_command, (comment['id'],))
+        row = cursor.fetchone()
+        print 'row = ',row
+    '''
     
 def geocode_locations(comment):
     '''
@@ -333,16 +374,26 @@ def main_update():
     '''
     Main function for updating db
     '''
-    #db = sqlite3.connect(DATABASE_NAME)
+    logging.info('#################### Beginning main_update ####################')
+    
+    #db = connect_db(app.config['DATABASE'][1])
+    # no module named hackrtrackr.helpers when I try above line
+    
     # *** I'm confused about how to do database name stuff... need help with that ***
-    db = sqlite3.connect('../test_db/testDB12.db')
+    db = sqlite3.connect(DATABASE_FILE)
     
     max_db_id = get_max_db_id(db)
+    logging.info('Max comment ID in database: {}'.format(max_db_id))
     
     comments = get_current_month_comments()
     # [{id, thread_id, text, thread_date, comment_date}]
+    logging.info('Total comments found for the month: {}'.format(len(comments)))
+    print 'Number of current month comments = {}'.format(len(comments))
     
     new_comments = select_new_comments(comments, max_db_id)
+    logging.info('New comments since last update: {}'.format(len(new_comments)))
+    print 'Number of new comments = {}'.format(len(new_comments))
+    sys.exit()
     
     if new_comments:
         # compile this regex once since it is slow if compile it for each comment
@@ -353,14 +404,37 @@ def main_update():
         
         glassdoor_id = None
         if company_guess:
+            logging.info('Guess made for company name: {}'.format(company_guess))
             comment_urls = get_urls(url_regex, comment)
             glassdoor_id = search_glassdoor(db, company_guess, comment_urls, stringency_flag = True)
+        else:
+            logging.info('No guess made for company name')
             
         locations = check_comment_for_location(comment)
         
         comment['company'] = company_guess
         comment['glassdoor_id'] = glassdoor_id
+        
+        msg = 'Comment ID={} | Company guess={} | glassdoor_id = {}'.format(
+            comment['id'],
+            comment['company'],
+            comment['glassdoor_id']
+        )
+        logging.info(msg)
+        
         # *** WRITE [comment] to posts table here ***
+        #update_table(posts, [comment])
+        
+        print 'About to call update table with comment',len(comment)
+        r = raw_input()
+        if r == 'q':
+            sys.exit()
+        conn = sqlite3.connect(DATABASE_FILE)
+        update_table(posts, [comment], setup = True, conn = conn)
+        sql_command = 'SELECT * FROM posts WHERE id == ?'
+        cursor = db.execute(sql_command, (comment['id'],))
+        row = cursor.fetchone()
+        print 'row = ',row
         
         comment['locations'] = locations
         geocode_locations(comment)
@@ -374,6 +448,8 @@ def main_update():
         if r == 'q':
             sys.exit()
             
-        #time.sleep(2) # to prevent too quick API calls
+        time.sleep(2) # to prevent too quick API calls
+        
+    # *** close database connection here? ***
     
 main_update()

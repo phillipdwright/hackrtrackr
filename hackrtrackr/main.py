@@ -3,14 +3,16 @@ from flask import Flask, g, render_template, render_template_string, request
 import os
 import re
 import sqlite3
-import numpy as np
 from bokeh.embed import components
 from bokeh.plotting import figure
 from bokeh.resources import INLINE
 from bokeh.util.string import encode_utf8
 
 from hackrtrackr.helpers import COLORS, get_matching_comments, make_fig
+# from helpers import COLORS, get_matching_comments, make_fig
 from hackrtrackr import settings
+import logging
+import datetime
 
 app = Flask(__name__)
 
@@ -19,6 +21,10 @@ app.debug = settings.DEBUG
 app.config['SECRET_KEY'] = settings.SECRET_KEY
 app.config['DATABASE'] = (0, settings.DATABASE_NAME)
 
+LOGGING_FORMAT = "%(asctime)s %(levelname)s %(module)s: %(message)s"
+# set to warning to avoid all the _internal logs about eac
+logging.basicConfig(format=LOGGING_FORMAT, filename='queries.log', level=logging.WARNING)
+
 def connect_db(db_name):
     # Connect to the database
     return sqlite3.connect(db_name)
@@ -26,7 +32,6 @@ def connect_db(db_name):
 @app.before_request
 def before_request():
     g.db = connect_db(app.config['DATABASE'][1])
-    # we could put stuff here about checking if json database is up-to-date
 
 @app.route('/', methods = ['GET','POST'])
 def index():
@@ -39,6 +44,8 @@ def index():
         
         # Get the location data
         user_location = (request.form['latitude'], request.form['longitude'])
+
+        logging.info('{} | {}'.format(user_location, keywords))
 
         fig = make_fig(keywords)
         

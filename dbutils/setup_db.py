@@ -1,12 +1,12 @@
 import sqlite3
 import json
 import os.path
-from dbutils.db_config import db_exists, create_db, Table
+from db_config import db_exists, create_db, full_db_path, db_name, Table, open_json
 from hackrtrackr import settings
 
-historic_data = os.path.join(settings.BASE_DIR, 'dbutils', 'data', 'comments_db_final.json')
-company_data = os.path.join(settings.BASE_DIR, 'dbutils', 'data', 'company_db_final.json')
-id_geocode_data = os.path.join(settings.BASE_DIR, 'dbutils', 'data', 'id_geocode_db_final.json')
+historic_data = os.path.join(settings.BASE_DIR, 'data', 'comments_db_final.json')
+company_data = os.path.join(settings.BASE_DIR, 'data', 'company_db_final.json')
+id_geocode_data = os.path.join(settings.BASE_DIR, 'data', 'id_geocode_db_final.json')
     
 posts_table_properties = [('comment_date', "DATE"), ('company', 'TEXT'), ('glassdoor_id', 'TEXT'), ('id', "INTEGER"), ('text', "TEXT"), ('thread_date', "DATE"), ('thread_id', "INTEGER")]
 #company_table_properties = [('con_review', 'TEXT'), ('id', 'INTEGER'), ('industry', 'TEXT'), ('name', "TEXT"), ('numberOfRatings', 'TEXT'), ('overallRating', 'INTEGER'), ('pro_review', 'TEXT'), ('squareLogo', 'INTEGER'), ('website', 'TEXT')]
@@ -20,11 +20,12 @@ posts = Table("posts", posts_table_properties, historic_data)
 company = Table("company", company_table_properties, company_data)
 id_geocode = Table("id_geocode", id_geocode_table_properties, id_geocode_data)
 
+if __name__ == "__main__":
 #see if the db already exists
-if db_bool == False:
-    create_db(historic_data, posts, company, id_geocode)
-else:
-    print("DB already exists")
+    if db_bool == False:
+        create_db(historic_data, posts, company, id_geocode)
+    else:
+        print("DB already exists")
 
 # update_table(table, data, setup = False, conn = None)
 

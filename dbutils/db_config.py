@@ -105,7 +105,7 @@ def update_table(table, data, setup = False, conn = None): #conn cannot be None 
     # DB will already be open
     if setup == False:
         conn = connect_db(db_name)
-        
+    print 'Entering update_table:'    
     c = conn.cursor()
     col_list = []
     for col in table.columns:
@@ -114,6 +114,7 @@ def update_table(table, data, setup = False, conn = None): #conn cannot be None 
         value = tuple(item["{}".format(cl)] for cl in col_list)
         query = table.insert_table(value)
         c.execute(query[0], query[1])
+        
     conn.commit()
     
     if setup == False:

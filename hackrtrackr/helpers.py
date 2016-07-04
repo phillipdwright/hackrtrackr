@@ -14,7 +14,11 @@ import os.path
 import vincenty
 import collections
 
+
 from hackrtrackr import settings
+import logging
+log = logging.getLogger(__name__)
+
 
 # unicode errors with city names so used this SO answer:
 # http://stackoverflow.com/questions/31137552/unicodeencodeerror-ascii-codec-cant-encode-character-at-special-name
@@ -22,23 +26,31 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-KEYWORD_DICT = {
+KEYWORD_TO_REGEX = {
     'c':re.compile('(^|\W)(C)($|\W)'),
     'go':re.compile('(^|\W)(Go)($|\W)'),
     'objective-c':re.compile('(^|\W)(Objective-C|Objective C)($|\W)', re.IGNORECASE),
-    'R':re.compile('(^|\W)(R)($|\W)'),
-    'HTML':re.compile('(^|\W)(HTML|HTML5)($|\W)'),
-    'CSS':re.compile('(^|\W)(CSS)($|\W)'),
-    'Frontend':re.compile('(^|\W)(Frontend|Front-end|Front end)($|\W)', re.IGNORECASE),
-    'Backend':re.compile('(^|\W)(Backend|Back-end|Back end)($|\W)', re.IGNORECASE),
-    'Remote':re.compile('(\W|^)(?<!no )(remote)(\W|$)', re.IGNORECASE), # ?<! is neg lookbehind
-    'Onsite':re.compile('(^|\W)(Onsite|On-site|On site)($|\W)', re.IGNORECASE),
-    'Internship':re.compile('(^|\W)(Intern|Interns|Internship|Internships)($|\W)', re.IGNORECASE),
-    'Full-time':re.compile('(^|\W)(Full time|Full-time|Fulltime)($|\W)', re.IGNORECASE),
-    'Visa':re.compile('(\W|^)(?<!no )(Visa|Visas)(\W|$)', re.IGNORECASE),
-    'H1B':re.compile('(\W|^)(H1B|H1Bs)(\W|$)', re.IGNORECASE),
-    'DevOps':re.compile('(\W|^)(DevOps|Dev-ops|Dev ops)(\W|$)', re.IGNORECASE)
+    'r':re.compile('(^|\W)(R)($|\W)'),
+    'html':re.compile('(^|\W)(HTML|HTML5)($|\W)'),
+    'css':re.compile('(^|\W)(CSS)($|\W)'),
+    'frontend':re.compile('(^|\W)(Frontend|Front-end|Front end)($|\W)', re.IGNORECASE),
+    'backend':re.compile('(^|\W)(Backend|Back-end|Back end)($|\W)', re.IGNORECASE),
+    'remote':re.compile('(\W|^)(?<!no )(remote)(\W|$)', re.IGNORECASE), # ?<! is neg lookbehind
+    'onsite':re.compile('(^|\W)(Onsite|On-site|On site)($|\W)', re.IGNORECASE),
+    'internship':re.compile('(^|\W)(Intern|Interns|Internship|Internships)($|\W)', re.IGNORECASE),
+    'full-time':re.compile('(^|\W)(Full time|Full-time|Fulltime)($|\W)', re.IGNORECASE),
+    'visa':re.compile('(\W|^)(?<!no )(Visa|Visas)(\W|$)', re.IGNORECASE),
+    'h1b':re.compile('(\W|^)(H1B|H1Bs)(\W|$)', re.IGNORECASE),
+    'devops':re.compile('(\W|^)(DevOps|Dev-ops|Dev ops)(\W|$)', re.IGNORECASE)
 }
+
+KEYWORD_VARIANTS = [
+    ('objective-c','objective c'),
+    ('html','html5'),
+    ('frontend','front-end','front end'),
+    ('backend','back-end','back end'),
+    ('onsite','on-site','on site'),
+    ('internship','interns','intern','internships'),]
 
 # taken from here selecting 12, qualitative colors: http://colorbrewer2.org/
 COLORS = (
@@ -77,6 +89,26 @@ GD_BASE = 'https://www.glassdoor.com/Overview/-EI_IE{}.htm'
 # Company logo files, and web file path for logos to be used by Flask
 LOGO_FILE = os.path.join(settings.BASE_DIR, 'hackrtrackr', 'static', 'img', 'logos', '{}.png')
 LOGO_IMG = os.path.join('img', 'logos', '{}.png')
+
+def get_keyword_regex(keyword):
+    '''
+    given: keyword
+    Looks to see if keyword matches a common term that has multiple spellings
+    If so it will subsitute in a regex pattern that includes variants
+    If not it will just return a regex pattern for the keyword excluding alpha-
+    numerics on both sides
+    Also the default here is to do IGNORECASE
+    returns: regex pattern for keyword
+    '''
+    if keyword.lower() in KEYWORD_TO_REGEX:
+        return KEYWORD_TO_REGEX[keyword.lower()]
+    for variant in KEYWORD_VARIANTS:
+        if keyword.lower() in variant:
+            return KEYWORD_TO_REGEX[variant[0]] # first variant is key in dict
+    
+    escaped_keyword = re.escape(keyword)
+    keyword_pattern = '(\W|^){}(\W|$)'.format(escaped_keyword)
+    return re.compile(keyword_pattern, re.IGNORECASE)
 
 def string_to_date(string_date):
     '''
@@ -176,11 +208,6 @@ def make_fig(keywords):
     also deals with special case of no keywords to get total posts
     returns: fig
     '''
-    # cached_counts_json = load_json_file(CACHED_COUNTS_FILE) # has both keyword counts and total counts
-    # cached_counts = {}
-    # for entry in cached_counts_json:
-    #     cached_counts[entry['keyword']] = entry['counts']
-    
     fig = figure(
             x_axis_type = "datetime",
             # responsive = True, # old responsive version, did not scale
@@ -206,18 +233,6 @@ def make_fig(keywords):
         # instead of doing one keyword at a time through all comments?
         # if we are doing html-> text for each comment I think so...
         fig = plot_dots_and_line(fig, keyword, color)
-        '''
-        cached_keywords = cached_counts.keys()
-        cached_keywords = [i.lower() for i in cached_keywords]
-        
-        if keyword.lower() in cached_keywords:
-            #print 'got cached counts for {}'.format(keyword)
-            counts = np.array(cached_counts[keyword.lower()])
-        else:
-            counts = keyword_counts(keyword)
-            counts /= np.array(cached_counts['Total Counts'])
-        fig = plot_dots_and_line(fig, counts, keyword, color, cached_counts['Total Counts'])
-        '''
         
     return fig
     
@@ -243,21 +258,22 @@ def keyword_counts(keyword, prefix_suffix_flag=True, case_flag=False):
     
     counts = np.zeros(len(DATE_LIST))
     total_counts = np.zeros(len(DATE_LIST))
-    keyword = re.escape(keyword) # escape special regex characters
+    keyword_regex = get_keyword_regex(keyword)
+    #keyword = re.escape(keyword) # escape special regex characters
     #print keyword
-    if prefix_suffix_flag:
-        keyword = '(\W|^){}(\W|$)'.format(keyword) # so it can't be part of a larger word
+    #if prefix_suffix_flag:
+    #    keyword = '(\W|^){}(\W|$)'.format(keyword) # so it can't be part of a larger word
     
-    if case_flag:
-        p = re.compile(keyword)
-    else:
-        p = re.compile(keyword, re.IGNORECASE)
+    #if case_flag:
+    #    p = re.compile(keyword)
+    #else:
+    #    p = re.compile(keyword, re.IGNORECASE)
         
     for comment in comments:
         text = comment[1]
         date = comment[0]
         index = DATE_INDEX[string_to_date(date)]
-        if p.search(text):
+        if keyword_regex.search(text):
             counts[index] += 1
         total_counts[index] += 1
     return total_counts, counts
@@ -278,10 +294,11 @@ def get_matching_comments(keywords, user_location):
     # compile patterns for each keyword
     patterns = []
     for keyword in keywords:
-        keyword = re.escape(keyword)
-        keyword = '(\W|^){}(\W|$)'.format(keyword)
-        p = re.compile(keyword, re.IGNORECASE)
-        patterns.append(p)
+        keyword_regex = get_keyword_regex(keyword)
+        #keyword = re.escape(keyword)
+        #keyword = '(\W|^){}(\W|$)'.format(keyword)
+        #p = re.compile(keyword, re.IGNORECASE)
+        patterns.append(keyword_regex)
     
     for comment_list in recent_comments:
         comment = {name:value for name,value in zip(posts_names,comment_list)}
@@ -389,7 +406,6 @@ def _get_snippet(text, keywords):
     start_position = min(max(0, match_position - 4), len(text_list) - 10)
     end_position = start_position + 10
     
-    
     for word in text_list[start_position : end_position]:
         if 'http://' in word or 'https://' in word or 'www.' in word:
             text_list.remove(word)
@@ -404,7 +420,6 @@ def _get_snippet(text, keywords):
         snippet = u'{}{}'.format(snippet, ellipsis)
     
     return u'"{}"'.format(snippet)
-
 
 def _get_rating(comment):
     '''
@@ -492,7 +507,6 @@ def _keyword_check(comment, patterns):
     total_keywords_found = 0
     marked_text = comment['text'] # used to add the keyword highlighting
     
-    
     for pattern, color in zip(patterns, HEX_COLORS):
         keyword_found = False
         start_ends = [] # store the position of each keyword match
@@ -510,28 +524,26 @@ def _keyword_check(comment, patterns):
             # Phil's very clever solution to avoid marking inside <a href> tags!
             previous_text = marked_text[:start].split()
             if previous_text and previous_text[-1].startswith('href'):
+                if comment['id'] == 12018993:
+                    print 'got here'
                 continue
 
+            # regex picks up 1 char on both sides so adjust for that
             if start > 0: # make sure hit wasn't at beginning of line
                 start += 1
             if end < len(marked_text) -1: # same with end of line
                 end -= 1
 
             # insert the highlighting tags
-            # marked_text = marked_text[:start] + \
-            #             '<font color="{}">'.format(color) + \
-            #             marked_text[start:end] + \
-            #             '</font>' + \
-            #             marked_text[end:]
-                        
-            marked_text = '{}<font color="{}">{}</font>{}'.format(
-                marked_text[:start],
-                color,
-                marked_text[start:end],
-                marked_text[end:]
-            )
+            # can't use string.format() here because it will change
+            # the length of special chars like quotes!
+            marked_text = marked_text[:start] + \
+                        '<font color="{}">'.format(color) + \
+                        marked_text[start:end] + \
+                        '</font>' + \
+                        marked_text[end:]
+            
     comment['marked_text'] = marked_text
-    
     return comment, total_keywords_found
     
 def _get_distance(id_, user_latlng):
