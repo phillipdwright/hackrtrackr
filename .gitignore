@@ -18,10 +18,14 @@ phil.sql
 
 # Dave test files
 dave_find_company.py
-dave_test_cache.py
+dave_test*
 
 # Old data files we are now ignoring
 heroku/
 old_data/
 data/
 test_db/
+old_logos/
+
+# Test databases
+test*.db

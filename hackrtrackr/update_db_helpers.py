@@ -290,6 +290,7 @@ def geocode_locations(comment):
     so we can look up common locations instead of geocoding them again
     Since a few cities are very common - San Francisco, New York, London
     '''
+    print 'Entering geocode_locations'
     unique_locations = [] # avoid adding multiples of same location
     locations = comment['locations']
     for location in locations:
