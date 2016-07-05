@@ -282,7 +282,7 @@ def keyword_counts(keyword, prefix_suffix_flag=True, case_flag=False):
     sql_command = 'SELECT thread_date, text FROM posts'
     cursor = g.db.execute(sql_command)
     comments = cursor.fetchall()
-    
+
     counts = np.zeros(len(DATE_LIST))
     total_counts = np.zeros(len(DATE_LIST))
     keyword_regex = get_keyword_regex(keyword)
