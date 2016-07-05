@@ -460,13 +460,14 @@ def get_matching_comments_2(keywords, user_location):
             for pattern in and_patterns:
                 if not pattern.search(comment['pure_text']):
                     continue
-                
-            for pattern in or_patterns:
-                if pattern.search(comment['pure_text']):
-                    # we only need one OR so we can stop now
-                    break
-            else: # if we had no ORs then go to next comment
-                continue
+            
+            if or_patterns:
+                for pattern in or_patterns:
+                    if pattern.search(comment['pure_text']):
+                        # we only need one OR so we can stop now
+                        break
+                else: # if we had no ORs then go to next comment
+                    continue
         
         # if we got here it means it is a keeper!
         
