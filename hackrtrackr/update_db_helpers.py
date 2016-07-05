@@ -34,7 +34,7 @@ logging.basicConfig(format=LOGGING_FORMAT, filename=LOGGING_FILENAME, level=logg
 IMAGE_FILE_BASE = os.path.join(settings.BASE_DIR, 'hackrtrackr', 'static', 'img', 'logos', '{}.{}')
 
 DATABASE_FILE = settings.DATABASE_NAME # Use this in production
-
+#DATABASE_FILE = '/home/ubuntu/workspace/hackrtrackr-test/test_db/test_autoupdate.db'
 def get_max_db_id(db):
     '''
     given: database connection
@@ -136,7 +136,11 @@ def guess_company(comment):
                     company_guess = None
                 elif len(company_guess) < 3:
                     company_guess = None
-                break
+                else: # we have a company guess, otherwise it will keep looping through sections
+                    # case where there was http or https after company name
+                    if split_company[-1] in ('http','https'):
+                        company_guess = ' '.join(split_company[:-1])
+                    break
     return company_guess
     
 def get_urls(url_regex, comment):
@@ -295,7 +299,7 @@ def search_glassdoor(db, company_guess, urls, stringency_flag = True):
         #     log_string += '\n{}: {}'.format(key, glassdoor_data[key])
         # logging.info('Made a glassdoor match:{}'.format(log_string))
         
-        logging.ingo('Made a glassdoor match: glassdoor_id = ({})'.format(glassdoor_id))
+        logging.info('Made a glassdoor match: glassdoor_id = ({})'.format(glassdoor_id))
         
         insert_row_into_table(db, 'company', glassdoor_data['id'], [glassdoor_data], 'id')
     return glassdoor_id
