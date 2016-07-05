@@ -452,22 +452,31 @@ def get_matching_comments_2(keywords, user_location):
         if keywords: # if no keywords just skip all this, we want to keep all comments
             comment['pure_text'] = BeautifulSoup(comment['text'], 'html.parser').get_text()
             
+            continue_flag = False
             for pattern in not_patterns:
                 if pattern.search(comment['pure_text']):
                     # go on to next comment
-                    continue
+                    continue_flag = True
+                    break
+            if continue_flag:
+                continue
                 
             for pattern in and_patterns:
                 if not pattern.search(comment['pure_text']):
-                    continue
+                    continue_flag = True
+            if continue_flag:
+                continue
             
             if or_patterns:
+                continue_flag = True
                 for pattern in or_patterns:
                     if pattern.search(comment['pure_text']):
+                        continue_flag = False
                         # we only need one OR so we can stop now
                         break
-                else: # if we had no ORs then go to next comment
+                if continue_flag:
                     continue
+            
         
         # if we got here it means it is a keeper!
         
