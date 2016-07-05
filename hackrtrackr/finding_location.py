@@ -442,9 +442,8 @@ def check_city_name(line):
         'Ann Arbor':['Ann Arbor'],
         'Pasadena':['Pasadena'],
         'Austin':['Austin'],
-        'The Hague':['The Hague']
-        
-        
+        'The Hague':['The Hague'],
+        'Buenos Aires':['Buenos Aires']
     }
     for city in cities_to_try:
         for alias in cities_to_try[city]:

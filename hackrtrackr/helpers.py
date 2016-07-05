@@ -41,7 +41,9 @@ KEYWORD_TO_REGEX = {
     'full-time':re.compile('(^|\W)(Full time|Full-time|Fulltime)($|\W)', re.IGNORECASE),
     'visa':re.compile('(\W|^)(?<!no )(Visa|Visas)(\W|$)', re.IGNORECASE),
     'h1b':re.compile('(\W|^)(H1B|H1Bs)(\W|$)', re.IGNORECASE),
-    'devops':re.compile('(\W|^)(DevOps|Dev-ops|Dev ops)(\W|$)', re.IGNORECASE)
+    'devops':re.compile('(\W|^)(DevOps|Dev-ops|Dev ops)(\W|$)', re.IGNORECASE),
+    'san francisco':re.compile('(\W|^)(San Francisco|SF|Bay Area)(\W|$)', re.IGNORECASE),
+    'new york':re.compile('(\W|^)(New York|NY|N\.Y\.C.|N\.Y\.)(\W|$)', re.IGNORECASE)
 }
 
 # Comment IDs that aren't real job posts so exclude them from being displayed
@@ -70,7 +72,9 @@ KEYWORD_VARIANTS = [
     ('frontend','front-end','front end'),
     ('backend','back-end','back end'),
     ('onsite','on-site','on site'),
-    ('internship','interns','intern','internships'),]
+    ('internship','interns','intern','internships'),
+    ('san francisco','sf','bay area'),
+    ('new york','new york city','nyc','n.y.c','n.y.')]
 
 # taken from here selecting 12, qualitative colors: http://colorbrewer2.org/
 COLORS = (
@@ -232,6 +236,7 @@ def make_fig(keywords):
             x_axis_type = "datetime",
             # responsive = True, # old responsive version, did not scale
             sizing_mode = 'stretch_both',
+            tools="",
             toolbar_location = None
         )
         

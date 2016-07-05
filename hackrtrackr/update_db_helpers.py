@@ -33,8 +33,8 @@ logging.basicConfig(format=LOGGING_FORMAT, filename=LOGGING_FILENAME, level=logg
 
 IMAGE_FILE_BASE = os.path.join(settings.BASE_DIR, 'hackrtrackr', 'static', 'img', 'logos', '{}.{}')
 
-DATABASE_FILE = 'test_db/test_autoupdate.db' # Use this in test
-# DATABASE_FILE = settings.DATABASE_NAME # Use this in production
+#DATABASE_FILE = 'test_db/test_autoupdate.db' # Use this in test
+DATABASE_FILE = settings.DATABASE_NAME # Use this in production
 
 def get_max_db_id(db):
     '''
@@ -113,7 +113,7 @@ def guess_company(comment):
     delimeters = re.compile('[|-]')
     sections = delimeters.split(first_line)
     
-    job_descriptors = re.compile('(^|\W)(Engineer|Senior|Developer|Onsite|Fulltime)($|\W)', re.IGNORECASE)
+    job_descriptors = re.compile('(^|\W)(Engineer|Senior|Developer|Onsite|Fulltime|Backend)($|\W)', re.IGNORECASE)
     opener = re.compile('[\w \.]+')
     company_guess = None
     for section in sections:
@@ -393,6 +393,8 @@ def insert_row_into_table(db, table_name, id_, data_json, unique_column):
     first makes sure there are no rows with that id in the 'id' column
     then calls update_table to insert the row of data
     then checks the data is now in the table
+    For the case of the id_geocode - there is no unique column so we will just
+    add no matter what
     '''
     table_name_to_class = {'posts':posts, 'company':company, 'id_geocode':id_geocode}
     
@@ -400,7 +402,10 @@ def insert_row_into_table(db, table_name, id_, data_json, unique_column):
     
     log_string = ''
     for key in sorted(data_row):
-        log_string += '\n{}: {}'.format(key, data_row[key])
+        if key == 'text':
+            log_string += '\n{}: {}'.format(key, data_row[key][:80])
+        else:
+            log_string += '\n{}: {}'.format(key, data_row[key])
     logging.info('Data to insert into {}:{}'.format(table_name, log_string))
     
     # Ensure the column names match the keys in the data_json
@@ -414,23 +419,28 @@ def insert_row_into_table(db, table_name, id_, data_json, unique_column):
         logging.error(msg)
         raise KeyError('Col names and data keys do not match')
         
+    
     sql_command = 'SELECT Count(*) FROM {} WHERE {} == ?'.format\
                 (table_name, unique_column)
     cursor = db.execute(sql_command, (id_,))
-    n_hits = cursor.fetchone()[0]
-    if n_hits == 0:
+    n_hits_before = cursor.fetchone()[0]
+    if n_hits_before == 0 or table_name == 'id_geocode':
         conn = sqlite3.connect(DATABASE_FILE)
         update_table(table_name_to_class[table_name], data_json, setup = True, conn = conn)
         
         cursor = db.execute(sql_command, (id_,))
-        n_hits = cursor.fetchone()[0]
-        if n_hits == 1:
+        n_hits_after = cursor.fetchone()[0]
+        if n_hits_after == 1:
             logging.info('Added ({}) to {} table'.format(id_, table_name))
-        elif n_hits == 0:
+        elif n_hits_after == 0:
             logging.error('({}) was not added to {} table'.format(id_, table_name))
         else:
-            logging.error('Multiple copies of ({})\
-            were added to {} table').format(id_, table_name)
+            if table_name == 'id_geocode':
+                logging.info('Added ({}) to {} table'.format(id_, table_name))
+                logging.info('There are now {} rows with this id'.format(n_hits_after))
+            else:
+                logging.error('Multiple copies of ({})\
+                were added to {} table').format(id_, table_name)
     else:
         logging.info('({}) was already in the {} table'.format(id_, table_name))
     
@@ -517,7 +527,7 @@ def main_update():
         geocode_locations(db, comment)
 
             
-        time.sleep(2) # to prevent too quick API calls
+        time.sleep(3) # to prevent too quick API calls
         
     logging.info('#################### Ending main_update ####################')
     db.close()

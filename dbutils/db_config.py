@@ -105,7 +105,7 @@ def update_table(table, data, setup = False, conn = None): #conn cannot be None 
     # DB will already be open
     if setup == False:
         conn = connect_db(db_name)
-    print 'Entering update_table:'    
+        
     c = conn.cursor()
     col_list = []
     for col in table.columns:
