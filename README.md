@@ -13,12 +13,22 @@ $ git clone git@github.com:phillipdwright/hackrtrackr.git
 $ cd hackrtrackr
 ```
 
-## Dependencies
+Install dependencies
 
-```
+```sh
 $ pip install -r requirements.txt
+```
 
+Set up database
+
+```sh
 $ python hackrtrackr/initialize_data.py
 $ python dbutils/setup_db.py
 $ python hackrtrackr/update_db_helpers.py
 ```
+
+## Contributors
+
+* [Phil Wright](https://github.com/phillipdwright)
+* [David Granas](https://github.com/duddles)
+* [Greg Karpov](https://github.com/gkarp)
