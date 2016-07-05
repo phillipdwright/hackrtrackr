@@ -316,7 +316,12 @@ def geocode_locations(db, comment):
     #print 'Entering geocode_locations'
     unique_locations = [] # avoid adding multiples of same location
     locations = comment['locations']
+    first_flag = True
     for location in locations:
+        if first_flag:
+            first_flag = False
+        else:
+            time.sleep(2)
         location = location.lower()
         
         tries = 0
@@ -327,7 +332,7 @@ def geocode_locations(db, comment):
             time.sleep(2)
             tries += 1
         if not any([g.city, g.state, g.country]):
-            logging.ERROR('Could not geocode location: {}'.format(location))
+            logging.error('Could not geocode location: {}'.format(location))
             continue
         
         city, state, country = g.city, g.state, g.country

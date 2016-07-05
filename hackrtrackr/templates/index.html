@@ -95,7 +95,7 @@
                 <hr>
                 <form id="search-form" class="form-inline" role="form" action="#plot" method="POST">
                     <div class="input-group">
-            		    <input type="text" class="form-control search-form search-input" name="keywords" placeholder="Python, remote...">
+            		    <input type="text" class="form-control search-form search-input" name="keywords" placeholder="Python, Ruby, +remote...">
             		    <span class="input-group-btn">
             		        <button type="submit" class="btn btn-primary search-btn" data-target="#search-form" name="q">
         		                <i class="fa fa-search"><!--FONT AWESOME font @ "http://fortawesome.github.io/Font-Awesome/" --></i>
@@ -157,7 +157,7 @@
                 {% else %}
                 
                 <div class="col-lg-12 text-center">
-                    <p class="text-muted">{{jobs|length}} job{% if jobs|length > 1 %}s were{% else %} was{% endif %} found{% if keywords != 'All' %} matching keyword{% if keywords|length > 1 %}s{% endif %} {{keywords}}{% endif %}</p>
+                    <p class="text-muted">{{jobs|length}} job{% if jobs|length > 1 %}s were{% else %} was{% endif %} found{% if keywords != 'All' %} matching keyword{% if ',' in keywords %}s{% endif %} {{keywords}}{% endif %}</p>
                 </div>
                 
                 {% for job in jobs %}

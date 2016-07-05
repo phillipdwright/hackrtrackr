@@ -573,47 +573,7 @@ def get_matching_comments_2(keywords, user_location):
         reverse=reverse
     )
     
-    return matching_comments    
-
-def _get_snippet(text, keywords):
-    '''
-    Return a ten-word snippet from the job post containing the first
-    keyword match
-    
-    Example for a search with keywords=['android']:
-    "...Swift) * Got some Android chops too? That's a plus!..."
-    '''
-    ellipsis = '...'
-    
-    text_list = text.split()
-    keywords = [keyword.lower() for keyword in keywords]
-    
-    # Start at the beginning of the post if for some reason
-    match_position = 0
-    
-    for word in text_list:
-        if any(keyword in word.lower() for keyword in keywords):
-            match_position = text_list.index(word)
-            break
-    
-    # Start pos. is at least 0 and at most 10 words before the end of the post
-    start_position = min(max(0, match_position - 4), len(text_list) - 10)
-    end_position = start_position + 10
-    
-    for word in text_list[start_position : end_position]:
-        if 'http://' in word or 'https://' in word or 'www.' in word:
-            text_list.remove(word)
-    
-    # Put the words around the keyword match back together
-    snippet = ' '.join(text_list[start_position : end_position])
-    
-    # Put an ellipsis at the beginning and end of the snippet, as appropriate
-    if start_position > 0:
-        snippet = u'{}{}'.format(ellipsis, snippet)
-    if end_position < len(text_list):
-        snippet = u'{}{}'.format(snippet, ellipsis)
-    
-    return u'"{}"'.format(snippet)
+    return matching_comments
 
 def _get_rating(comment):
     '''
