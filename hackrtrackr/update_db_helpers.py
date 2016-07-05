@@ -5,17 +5,23 @@ from settings import DATABASE_NAME
 import datetime
 import re
 from bs4 import BeautifulSoup
-import sys
 from finding_location import check_line_for_location, check_comment_for_location
 import geocoder
 import time
 #from main import app, connect_db
 import logging
 from operator import itemgetter
+import os
+import requests
 
 from dbutils.db_config import update_table
 from dbutils.setup_db import posts, company, id_geocode
 #from db_config import update_table
+from hackrtrackr import settings
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 '''
 Functions that are used for updating the DB
 '''
@@ -25,7 +31,10 @@ LOGGING_FILENAME = 'db_update_{}.log'.format(current_month)
 LOGGING_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
 logging.basicConfig(format=LOGGING_FORMAT, filename=LOGGING_FILENAME, level=logging.DEBUG)
 
-DATABASE_FILE = 'test_db/test_autoupdate.db'
+IMAGE_FILE_BASE = os.path.join(settings.BASE_DIR, 'hackrtrackr', 'static', 'img', 'logos', '{}.{}')
+
+DATABASE_FILE = 'test_db/test_autoupdate.db' # Use this in test
+# DATABASE_FILE = settings.DATABASE_NAME # Use this in production
 
 def get_max_db_id(db):
     '''
@@ -51,6 +60,7 @@ def get_current_month_comments():
             current_thread = thread
             break
     else:
+        logging.error('Current month thread not found')
         raise KeyError('Current month thread not found')
     
     comments = get_comments_from_thread(thread)
@@ -215,19 +225,18 @@ def get_logo(glassdoor_id, url):
     given: glassdoor_id and squareLogo url to the logo on glassdoor's site
     if we don't already have the url then download it
     '''
-    print 'In get_logo to download the logo {} for glassdoor id {}'.format(url, glassdoor_id)
-    return True
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
  
     url_suffix = url.split('.')[-1]
-    # *** NOT SURE HOW THIS FILE SYSTEM WILL BE ***
-    img_filename = '/img/logos/{}.{}'.format(glassdoor_id, url_suffix)
+    
+    img_filename = IMAGE_FILE_BASE.format(glassdoor_id, url_suffix)
     if os.path.isfile(img_filename):
-        return True # already got that image
+        logging.info('Image file {} already exists'.format(img_filename))
+        return # already got that image
     
     with open(img_filename,'wb') as FH:
         FH.write(requests.get(url, headers=headers).content)
-        #print 'Wrote {}'.format(img_filename)
+        logging.info('Image file {} was created'.format(img_filename))
     
 def search_glassdoor(db, company_guess, urls, stringency_flag = True):
     '''
@@ -281,35 +290,41 @@ def search_glassdoor(db, company_guess, urls, stringency_flag = True):
     if matched_employer:
         glassdoor_data = get_glassdoor_fields(matched_employer)
         glassdoor_id = glassdoor_data['id']
-        logging.info('Made a glassdoor match: {}, glassdoor ID = {}'\
-            .format(glassdoor_data['name'], glassdoor_data['id']))
-        print 'Glassdoor match to {}'.format(glassdoor_data['name'])
+        
+        log_string = ''
+        for key in sorted(glassdoor_data):
+            log_string += '\n{}: {}'.format(key, glassdoor_data[key])
+        logging.info('Made a glassdoor match:{}'.format(log_string))
+        
+        #print 'Glassdoor match to {}'.format(glassdoor_data['name'])
         
         # see if there is already that ID in the company table
         # This is not best way to do it so fix this later...
-        sql_command = 'SELECT Count(*) FROM company WHERE id == ?'
-        cursor = db.execute(sql_command, (glassdoor_data['id'],))
-        n_hits = cursor.fetchone()[0]
-        if n_hits == 0:
-            print 'It is not in the database so we would add it now'
+        insert_row_into_table(db, 'company', glassdoor_data['id'], [glassdoor_data], 'id')
+        # sql_command = 'SELECT Count(*) FROM company WHERE id == ?'
+        # cursor = db.execute(sql_command, (glassdoor_data['id'],))
+        # n_hits = cursor.fetchone()[0]
+        # if n_hits == 0:
+
+        #     conn = sqlite3.connect(DATABASE_FILE)
+        #     update_table(company, [glassdoor_data], setup = True, conn = conn)
             
-            conn = sqlite3.connect(DATABASE_FILE)
-            update_table(company, [glassdoor_data], setup = True, conn = conn)
-            
-            sql_command = 'SELECT Count(*) FROM company WHERE id == ?'
-            cursor = db.execute(sql_command, (glassdoor_data['id'],))
-            n_hits = cursor.fetchone()[0]
-            if n_hits == 1:
-                logging.info('Added ({}, {}) company table'.format\
-                (glassdoor_data['name'], glassdoor_data['id']))
-            elif n_hits == 0:
-                logging.error('({}, {}) was not added to company table'.format)
-            # we don't have it so add it to the company table
-            # Use update_table from db_config
-            # import the table company (make sure I don't have a company variable!)
-            # send data as json of [{glassdoor_data}]
-        else:
-            print 'It was already in the database'
+        #     sql_command = 'SELECT Count(*) FROM company WHERE id == ?'
+        #     cursor = db.execute(sql_command, (glassdoor_data['id'],))
+        #     n_hits = cursor.fetchone()[0]
+        #     if n_hits == 1:
+        #         logging.info('Added ({}, {}) to company table'.format\
+        #         (glassdoor_data['name'], glassdoor_data['id']))
+        #     elif n_hits == 0:
+        #         logging.error('({}, {}) was not added to company table'.format\
+        #         (glassdoor_data['name'], glassdoor_data['id']))
+        #     else:
+        #         logging.error('Multiple copies of ({}, {})\
+        #         were added to company table').format(glassdoor['name'])
+        # else:
+        #     print 'It was already in the database'
+        #     logging.info('({}, {}) was already in the company table'.format\
+        #     (glassdoor_data['name'], glassdoor_data['id']))
               
     return glassdoor_id
     
@@ -322,7 +337,7 @@ def search_glassdoor(db, company_guess, urls, stringency_flag = True):
         print 'row = ',row
     '''
     
-def geocode_locations(comment):
+def geocode_locations(db, comment):
     '''
     given: comment with 'locations' key that is list of locations
     geocode each location and write them as rows to id_geocode table
@@ -331,22 +346,21 @@ def geocode_locations(comment):
     so we can look up common locations instead of geocoding them again
     Since a few cities are very common - San Francisco, New York, London
     '''
-    print 'Entering geocode_locations'
+    #print 'Entering geocode_locations'
     unique_locations = [] # avoid adding multiples of same location
     locations = comment['locations']
     for location in locations:
         location = location.lower()
         
-        tries = 2
-        print location
-        while tries < 10:
+        tries = 0
+        while tries < 5:
             g = geocoder.google(location)
             if any([g.city, g.state, g.country]):
                 break
-            time.sleep(tries)
+            time.sleep(2)
             tries += 1
         if not any([g.city, g.state, g.country]):
-            # Could not geocode - add to logger
+            logging.ERROR('Could not geocode location: {}'.format(location))
             continue
         
         city, state, country = g.city, g.state, g.country
@@ -356,28 +370,75 @@ def geocode_locations(comment):
             state = ''
         if not country:
             country = ''
+        lat, lng = g.latlng
         d = dict(id=comment['id'],
                 city=g.city, 
                 state=g.state, 
                 country=g.country, 
-                latlng = g.latlng
+                lat = lat,
+                lng = lng
             )
         if d not in unique_locations:
             unique_locations.append(d)
     
     for row in unique_locations:
-        print 'Inserting {} {} into id_geocode'.format(row['id'], row['city'])
-        # *** INSERT THIS LOCATION INTO THE ID_GEOCODE TABLE ***
+        # insert row data into id_geocode table
+        insert_row_into_table(db, 'id_geocode', row['id'], [row], 'id')
 
+
+def insert_row_into_table(db, table_name, id_, data_json, unique_column):
+    '''
+    given: table name, an id value that should not be in table, json data, and 
+    the name of a column that should not have the id value
+    first makes sure there are no rows with that id in the 'id' column
+    then calls update_table to insert the row of data
+    then checks the data is now in the table
+    '''
+    table_name_to_class = {'posts':posts, 'company':company, 'id_geocode':id_geocode}
+    
+    data_row = data_json[0]
+    
+    log_string = ''
+    for key in sorted(data_row):
+        log_string += '\n{}: {}'.format(key, data_row[key])
+    logging.info('Data to insert into {}:{}'.format(table_name, log_string))
+    
+    # Ensure the column names match the keys in the data_json
+    sql_command = 'SELECT * FROM {}'.format(table_name)
+    cursor = db.execute(sql_command)
+    col_names = [description[0] for description in cursor.description]
+    if sorted(data_row) != sorted(col_names):
+        msg = 'Data keys and column names from table {} do not match:\n'
+        msg += 'Column names: {}\n'.format(sorted(col_names))
+        msg += 'Data keys: {}'.format(sorted(data_row))
+        logging.error(msg)
+        raise KeyError('Col names and data keys do not match')
+        
+    sql_command = 'SELECT Count(*) FROM {} WHERE {} == ?'.format\
+                (table_name, unique_column)
+    cursor = db.execute(sql_command, (id_,))
+    n_hits = cursor.fetchone()[0]
+    if n_hits == 0:
+        conn = sqlite3.connect(DATABASE_FILE)
+        update_table(table_name_to_class[table_name], data_json, setup = True, conn = conn)
+        
+        cursor = db.execute(sql_command, (id_,))
+        n_hits = cursor.fetchone()[0]
+        if n_hits == 1:
+            logging.info('Added ({}) to {} table'.format(id_, table_name))
+        elif n_hits == 0:
+            logging.error('({}) was not added to {} table'.format(id_, table_name))
+        else:
+            logging.error('Multiple copies of ({})\
+            were added to {} table').format(id_, table_name)
+    else:
+        logging.info('({}) was already in the {} table'.format(id_, table_name))
     
 def main_update():
     '''
     Main function for updating db
     '''
     logging.info('#################### Beginning main_update ####################')
-    
-    #db = connect_db(app.config['DATABASE'][1])
-    # no module named hackrtrackr.helpers when I try above line
     
     # *** I'm confused about how to do database name stuff... need help with that ***
     db = sqlite3.connect(DATABASE_FILE)
@@ -388,18 +449,19 @@ def main_update():
     comments = get_current_month_comments()
     # [{id, thread_id, text, thread_date, comment_date}]
     logging.info('Total comments found for the month: {}'.format(len(comments)))
-    print 'Number of current month comments = {}'.format(len(comments))
+    #print 'Number of current month comments = {}'.format(len(comments))
     
     new_comments = select_new_comments(comments, max_db_id)
     logging.info('New comments since last update: {}'.format(len(new_comments)))
-    print 'Number of new comments = {}'.format(len(new_comments))
-    sys.exit()
+    #print 'Number of new comments = {}'.format(len(new_comments))
+    #sys.exit()
     
     if new_comments:
         # compile this regex once since it is slow if compile it for each comment
         url_regex = re.compile('(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?', re.IGNORECASE)
     
     for comment in new_comments:
+        logging.info('#################### New comment ####################')
         company_guess = guess_company(comment)
         
         glassdoor_id = None
@@ -411,45 +473,53 @@ def main_update():
             logging.info('No guess made for company name')
             
         locations = check_comment_for_location(comment)
+        log_string = ''
+        for location in locations:
+            log_string += '\n{}'.format(location)
+        logging.info('Following locations were found:{}'.format(log_string))
         
         comment['company'] = company_guess
         comment['glassdoor_id'] = glassdoor_id
         
-        msg = 'Comment ID={} | Company guess={} | glassdoor_id = {}'.format(
-            comment['id'],
-            comment['company'],
-            comment['glassdoor_id']
-        )
-        logging.info(msg)
+        # log_string = ''
+        # for key in sorted(comment):
+        #     log_string += '{}: {}\n'.format(key, comment[key])
+        # logging.info('Comment data to insert into posts:\n{}'.format(log_string))
         
         # *** WRITE [comment] to posts table here ***
-        #update_table(posts, [comment])
+        insert_row_into_table(db, 'posts', comment['id'], [comment], 'id')
+        #conn = sqlite3.connect(DATABASE_FILE)
         
-        print 'About to call update table with comment',len(comment)
-        r = raw_input()
-        if r == 'q':
-            sys.exit()
-        conn = sqlite3.connect(DATABASE_FILE)
-        update_table(posts, [comment], setup = True, conn = conn)
-        sql_command = 'SELECT * FROM posts WHERE id == ?'
-        cursor = db.execute(sql_command, (comment['id'],))
-        row = cursor.fetchone()
-        print 'row = ',row
+        # make sure it doesn't already exist in posts table
+        # sql_command = 'SELECT Count(*) FROM posts WHERE id == ?'
+        # cursor = db.execute(sql_command, (comment['id'],))
+        # n_hits = cursor.fetchone()[0]
+        # if n_hits == 0:
+        #     conn = sqlite3.connect(DATABASE_FILE)
+        #     update_table(posts, [comment], setup = True, conn = conn)
+            
+        #     sql_command = 'SELECT Count(*) FROM posts WHERE id == ?'
+        #     cursor = db.execute(sql_command, (comment['id'],))
+        #     n_hits = cursor.fetchone()[0]
+        #     if n_hits == 1:
+        #         logging.info('Added comment ({}) to posts table'.format\
+        #         (comment['id']))
+        #     elif n_hits == 0:
+        #         logging.error('Comment ({}) was not added to posts table'.format\
+        #         (comment['id']))
+        #     else:
+        #         logging.error('Multiple copies of comment ({})\
+        #         were added to posts table').format(comment['id'])
+        # else:
+        #     logging.info('Comment ({}) was already in the posts table'.format(comment['id']))
         
         comment['locations'] = locations
-        geocode_locations(comment)
-        
-        print 'Company guess: ',company_guess
-        print 'Comment urls: ',comment_urls
-        print 'Locations: ',locations
-        print 'Glassdoor id: ',glassdoor_id
-            
-        r = raw_input()
-        if r == 'q':
-            sys.exit()
+        geocode_locations(db, comment)
+
             
         time.sleep(2) # to prevent too quick API calls
         
-    # *** close database connection here? ***
+    logging.info('#################### Ending main_update ####################')
+    db.close()
     
 main_update()

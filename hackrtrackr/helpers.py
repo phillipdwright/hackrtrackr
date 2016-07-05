@@ -44,6 +44,26 @@ KEYWORD_TO_REGEX = {
     'devops':re.compile('(\W|^)(DevOps|Dev-ops|Dev ops)(\W|$)', re.IGNORECASE)
 }
 
+# Comment IDs that aren't real job posts so exclude them from being displayed
+EXCLUDE_LIST = [
+    11814917,
+    11816723,
+    11816728,
+    11837035,
+    11815029,
+    11820450,
+    11820467,
+    11815098,
+    11815422,
+    12019764,
+    12017045,
+    12020411,
+    12016831,
+    12018381,
+    12019415,
+    12023654
+    ]
+
 KEYWORD_VARIANTS = [
     ('objective-c','objective c'),
     ('html','html5'),
@@ -302,6 +322,8 @@ def get_matching_comments(keywords, user_location):
     
     for comment_list in recent_comments:
         comment = {name:value for name,value in zip(posts_names,comment_list)}
+        if comment['id'] in EXCLUDE_LIST:
+            continue
         comment['pure_text'] = BeautifulSoup(comment['text'], 'html.parser').get_text()
         comment, total_keywords_found = _keyword_check(comment, patterns)
         
@@ -326,7 +348,7 @@ def get_matching_comments(keywords, user_location):
             #comment['distance'] = _get_distance(comment['id'], user_location)
             
             # If company name is None then just grab the first part of the text
-            if comment['company'] is None:
+            if comment['company'] is None or comment['company'] == '':
                 company_snippet = comment['pure_text'][:25] + '..'
             else:
                 company_snippet = comment['company']
