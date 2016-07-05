@@ -92,12 +92,14 @@ def create_db(starting_data, *tables):
         update_table(t, data, setup = True, conn = conn)
 
     #Validate DB creation
+    """
     z = conn.execute('''SELECT company from posts limit 10''')
     y = conn.execute('''SELECT website from company limit 10''')
     x = conn.execute('''SELECT lng from id_geocode limit 10''')
     print(z.fetchall())
     print(y.fetchall())
     print(x.fetchall())
+    """
     conn.close()
 
 def update_table(table, data, setup = False, conn = None): #conn cannot be None if setup == True
