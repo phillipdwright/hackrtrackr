@@ -1,0 +1,1036 @@
+1	New York	New York	8,550,405	6.6% 
+2	Los Angeles	California	3,971,883	7.2% 
+3	Chicago	Illinois	2,720,546	-6.0% 
+4	Houston	Texas	2,296,224	16.0% 
+5	Philadelphia	Pennsylvania	1,567,442	3.5% 
+6	Phoenix	Arizona	1,563,025	17.7% 
+7	San Antonio	Texas	1,469,845	26.2% 
+8	San Diego	California	1,394,928	13.7% 
+9	Dallas	Texas	1,300,092	9.1% 
+10	San Jose	California	1,026,908	13.6% 
+11	Austin	Texas	931,830	38.6% 
+12	Jacksonville	Florida	868,031	17.8% 
+13	San Francisco	California	864,816	11.2% 
+14	Indianapolis	Indiana	853,173	9.0% 
+15	Columbus	Ohio	850,106	18.7% 
+16	Fort Worth	Texas	833,319	52.6% 
+17	Charlotte	North Carolina	827,097	45.1% 
+18	Seattle	Washington	684,451	21.3% 
+19	Denver	Colorado	682,545	22.7% 
+20	El Paso	Texas	681,124	20.5% 
+21	Detroit	Michigan	677,116	-28.3% 
+22	Washington	District of Columbia	672,228	17.5% 
+23	Boston	Massachusetts	667,137	12.9% 
+24	Memphis	Tennessee	655,770	-4.9% 
+25	Nashville-Davidson	Tennessee	654,610	19.9% 
+26	Portland	Oregon	632,309	19.3% 
+27	Oklahoma City	Oklahoma	631,346	24.3% 
+28	Las Vegas	Nevada	623,747	28.7% 
+29	Baltimore	Maryland	621,849	-4.1% 
+30	Louisville	Kentucky	615,366	11.0% 
+31	Milwaukee	Wisconsin	600,155	0.5% 
+32	Albuquerque	New Mexico	559,121	24.0% 
+33	Tucson	Arizona	531,641	8.6% 
+34	Fresno	California	520,052	20.7% 
+35	Sacramento	California	490,712	19.9% 
+36	Kansas City	Missouri	475,378	7.4% 
+37	Long Beach	California	474,140	2.5% 
+38	Mesa	Arizona	471,825	17.1% 
+39	Atlanta	Georgia	463,878	10.1% 
+40	Colorado Springs	Colorado	456,568	26.0% 
+41	Virginia Beach	Virginia	452,745	6.1% 
+42	Raleigh	North Carolina	451,066	55.4% 
+43	Omaha	Nebraska	443,885	8.2% 
+44	Miami	Florida	441,003	21.4% 
+45	Oakland	California	419,267	4.6% 
+46	Minneapolis	Minnesota	410,939	7.4% 
+47	Tulsa	Oklahoma	403,505	2.7% 
+48	Wichita	Kansas	389,965	10.6% 
+49	New Orleans	Louisiana	389,617	-19.4% 
+50	Arlington	Texas	388,125	15.9% 
+51	Cleveland	Ohio	388,072	-18.5% 
+52	Bakersfield	California	373,640	52.5% 
+53	Tampa	Florida	369,075	21.3% 
+54	Aurora	Colorado	359,407	29.3% 
+55	Honolulu	Hawaii	352,769	-4.9% 
+56	Anaheim	California	350,742	6.5% 
+57	Santa Ana	California	335,400	-0.9% 
+58	Corpus Christi	Texas	324,074	16.8% 
+59	Riverside	California	322,424	24.7% 
+60	St. Louis	Missouri	315,685	-8.9% 
+61	Lexington-Fayette	Kentucky	314,488	20.4% 
+62	Stockton	California	305,658	24.9% 
+63	Pittsburgh	Pennsylvania	304,391	-8.7% 
+64	St. Paul	Minnesota	300,851	4.9% 
+65	Anchorage	Alaska	298,695	14.6% 
+66	Cincinnati	Ohio	298,550	-9.8% 
+67	Henderson	Nevada	285,667	59.3% 
+68	Greensboro	North Carolina	285,342	24.8% 
+69	Plano	Texas	283,558	26.4% 
+70	Newark	New Jersey	281,944	3.4% 
+71	Toledo	Ohio	279,789	-10.8% 
+72	Lincoln	Nebraska	277,348	21.8% 
+73	Orlando	Florida	270,934	39.1% 
+74	Chula Vista	California	265,757	51.3% 
+75	Jersey City	New Jersey	264,290	10.1% 
+76	Chandler	Arizona	260,828	45.2% 
+77	Fort Wayne	Indiana	260,326	2.5% 
+78	Buffalo	New York	258,071	-11.6% 
+79	Durham	North Carolina	257,636	36.4% 
+80	St. Petersburg	Florida	257,083	3.3% 
+81	Irvine	California	256,927	75.1% 
+82	Laredo	Texas	255,473	42.3% 
+83	Lubbock	Texas	249,042	24.3% 
+84	Madison	Wisconsin	248,951	18.5% 
+85	Gilbert	Arizona	247,542	111.0% 
+86	Norfolk	Virginia	246,393	5.1% 
+87	Reno	Nevada	241,445	31.2% 
+88	Winston-Salem	North Carolina	241,218	19.2% 
+89	Glendale	Arizona	240,126	8.2% 
+90	Hialeah	Florida	237,069	4.8% 
+91	Garland	Texas	236,897	9.6% 
+92	Scottsdale	Arizona	236,839	15.9% 
+93	Irving	Texas	236,607	23.2% 
+94	Chesapeake	Virginia	235,429	17.5% 
+95	North Las Vegas	Nevada	234,807	99.0% 
+96	Fremont	California	232,206	13.6% 
+97	Baton Rouge	Louisiana	228,590	0.1% 
+98	Richmond	Virginia	220,289	11.4% 
+99	Boise City	Idaho	218,281	11.6% 
+100	San Bernardino	California	216,108	14.3% 
+101	Spokane	Washington	213,272	8.3% 
+102	Birmingham	Alabama	212,461	-12.2% 
+103	Modesto	California	211,266	11.0% 
+104	Des Moines	Iowa	210,330	5.3% 
+105	Rochester	New York	209,802	-4.4% 
+106	Tacoma	Washington	207,948	7.2% 
+107	Fontana	California	207,460	41.3% 
+108	Oxnard	California	207,254	20.7% 
+109	Moreno Valley	California	204,198	42.5% 
+110	Fayetteville	North Carolina	201,963	1.2% 
+111	Huntington Beach	California	201,899	6.2% 
+112	Yonkers	New York	201,116	2.4% 
+113	Glendale	California	201,020	2.9% 
+114	Aurora	Illinois	200,661	38.8% 
+115	Montgomery	Alabama	200,602	-0.5% 
+116	Columbus	Georgia	200,579	7.5% 
+117	Amarillo	Texas	198,645	14.1% 
+118	Little Rock	Arkansas	197,992	7.9% 
+119	Akron	Ohio	197,542	-8.9% 
+120	Shreveport	Louisiana	197,204	-1.6% 
+121	Augusta-Richmond County	Georgia	197,182	1.0% 
+122	Grand Rapids	Michigan	195,097	-1.4% 
+123	Mobile	Alabama	194,288	-2.2% 
+124	Salt Lake City	Utah	192,672	5.9% 
+125	Huntsville	Alabama	190,582	19.0% 
+126	Tallahassee	Florida	189,907	24.1% 
+127	Grand Prairie	Texas	187,809	46.6% 
+128	Overland Park	Kansas	186,515	22.9% 
+129	Knoxville	Tennessee	185,291	5.1% 
+130	Worcester	Massachusetts	184,815	7.1% 
+131	Brownsville	Texas	183,887	28.2% 
+132	Newport News	Virginia	182,385	1.1% 
+133	Santa Clarita	California	182,371	17.1% 
+134	Port St. Lucie	Florida	179,413	101.1% 
+135	Providence	Rhode Island	179,207	3.0% 
+136	Fort Lauderdale	Florida	178,590	4.3% 
+137	Chattanooga	Tennessee	176,588	12.6% 
+138	Tempe	Arizona	175,826	10.6% 
+139	Oceanside	California	175,691	8.4% 
+140	Garden Grove	California	175,393	6.0% 
+141	Rancho Cucamonga	California	175,236	35.7% 
+142	Cape Coral	Florida	175,229	69.5% 
+143	Santa Rosa	California	174,972	17.2% 
+144	Vancouver	Washington	172,860	17.9% 
+145	Sioux Falls	South Dakota	171,544	36.5% 
+146	Peoria	Arizona	171,237	54.3% 
+147	Ontario	California	171,214	7.9% 
+148	Jackson	Mississippi	170,674	-7.8% 
+149	Elk Grove	California	166,913	104.3% 
+150	Springfield	Missouri	166,810	9.5% 
+151	Pembroke Pines	Florida	166,611	20.5% 
+152	Salem	Oregon	164,549	19.3% 
+153	Corona	California	164,226	27.2% 
+154	Eugene	Oregon	163,460	17.5% 
+155	McKinney	Texas	162,898	190.9% 
+156	Fort Collins	Colorado	161,175	34.2% 
+157	Lancaster	California	161,103	35.2% 
+158	Cary	North Carolina	159,769	64.0% 
+159	Palmdale	California	158,351	34.7% 
+160	Hayward	California	158,289	12.2% 
+161	Salinas	California	157,380	9.6% 
+162	Frisco	Texas	154,407	337.6% 
+163	Springfield	Massachusetts	154,341	1.6% 
+164	Pasadena	Texas	153,784	8.3% 
+165	Macon-Bibb County	Georgia	153,515	
+166	Alexandria	Virginia	153,511	18.6% 
+167	Pomona	California	153,266	3.4% 
+168	Lakewood	Colorado	152,597	5.6% 
+169	Sunnyvale	California	151,754	15.1% 
+170	Escondido	California	151,451	12.7% 
+171	Kansas City	Kansas	151,306	3.0% 
+172	Hollywood	Florida	149,728	7.1% 
+173	Clarksville	Tennessee	149,176	43.5% 
+174	Torrance	California	148,475	7.4% 
+175	Rockford	Illinois	148,278	-2.3% 
+176	Joliet	Illinois	147,861	36.6% 
+177	Paterson	New Jersey	147,754	-1.0% 
+178	Bridgeport	Connecticut	147,629	5.7% 
+179	Naperville	Illinois	147,100	13.7% 
+180	Savannah	Georgia	145,674	9.7% 
+181	Mesquite	Texas	144,788	15.8% 
+182	Syracuse	New York	144,142	-1.3% 
+183	Pasadena	California	142,250	5.7% 
+184	Orange	California	140,992	8.5% 
+185	Fullerton	California	140,847	11.3% 
+186	Killeen	Texas	140,806	56.2% 
+187	Dayton	Ohio	140,599	-15.2% 
+188	McAllen	Texas	140,269	31.0% 
+189	Bellevue	Washington	139,820	24.3% 
+190	Miramar	Florida	137,132	83.9% 
+191	Hampton	Virginia	136,454	-6.8% 
+192	West Valley City	Utah	136,208	24.6% 
+193	Warren	Michigan	135,358	-1.9% 
+194	Olathe	Kansas	134,305	43.0% 
+195	Columbia	South Carolina	133,803	12.0% 
+196	Thornton	Colorado	133,451	60.2% 
+197	Carrollton	Texas	133,168	20.7% 
+198	Midland	Texas	132,950	39.9% 
+199	Charleston	South Carolina	132,609	33.9% 
+200	Waco	Texas	132,356	15.4% 
+201	Sterling Heights	Michigan	132,052	5.9% 
+202	Denton	Texas	131,044	56.6% 
+203	Cedar Rapids	Iowa	130,405	7.0% 
+204	New Haven	Connecticut	130,322	5.3% 
+205	Roseville	California	130,269	60.2% 
+206	Gainesville	Florida	130,128	15.1% 
+207	Visalia	California	130,104	36.0% 
+208	Coral Springs	Florida	129,485	8.1% 
+209	Thousand Oaks	California	129,339	10.1% 
+210	Elizabeth	New Jersey	129,007	6.7% 
+211	Stamford	Connecticut	128,874	9.6% 
+212	Concord	California	128,667	5.2% 
+213	Surprise	Arizona	128,422	297.0% 
+214	Lafayette	Louisiana	127,657	14.0% 
+215	Topeka	Kansas	127,265	3.1% 
+216	Kent	Washington	126,952	57.4% 
+217	Simi Valley	California	126,788	13.2% 
+218	Santa Clara	California	126,215	23.2% 
+219	Murfreesboro	Tennessee	126,118	77.9% 
+220	Hartford	Connecticut	124,006	-0.1% 
+221	Athens-Clarke County	Georgia	122,604	21.6% 
+222	Victorville	California	122,225	89.4% 
+223	Abilene	Texas	121,721	5.0% 
+224	Vallejo	California	121,253	3.3% 
+225	Berkeley	California	120,972	17.4% 
+226	Norman	Oklahoma	120,284	24.2% 
+227	Allentown	Pennsylvania	120,207	12.7% 
+228	Evansville	Indiana	119,943	-1.1% 
+229	Columbia	Missouri	119,108	38.5% 
+230	Odessa	Texas	118,968	31.4% 
+231	Fargo	North Dakota	118,523	30.3% 
+232	Beaumont	Texas	118,129	4.0% 
+233	Independence	Missouri	117,255	3.2% 
+234	Ann Arbor	Michigan	117,070	2.1% 
+235	El Monte	California	116,732	0.4% 
+236	Springfield	Illinois	116,565	3.8% 
+237	Round Rock	Texas	115,997	91.1% 
+238	Wilmington	North Carolina	115,933	29.1% 
+239	Arvada	Colorado	115,368	12.8% 
+240	Provo	Utah	115,264	9.0% 
+241	Peoria	Illinois	115,070	1.8% 
+242	Lansing	Michigan	115,056	-3.5% 
+243	Downey	California	114,219	6.2% 
+244	Carlsbad	California	113,453	42.8% 
+245	Costa Mesa	California	113,204	3.4% 
+246	Miami Gardens	Florida	113,187	12.3% 
+247	Westminster	Colorado	113,130	11.6% 
+248	Clearwater	Florida	113,003	3.1% 
+249	Fairfield	California	112,970	16.6% 
+250	Rochester	Minnesota	112,225	25.5% 
+251	Elgin	Illinois	112,111	18.1% 
+252	Temecula	California	112,011	63.0% 
+253	West Jordan	Utah	111,946	40.8% 
+254	Inglewood	California	111,666	-0.9% 
+255	Richardson	Texas	110,815	20.0% 
+256	Lowell	Massachusetts	110,699	5.2% 
+257	Gresham	Oregon	110,553	21.9% 
+258	Antioch	California	110,542	20.7% 
+259	Cambridge	Massachusetts	110,402	8.5% 
+260	High Point	North Carolina	110,268	27.3% 
+261	Billings	Montana	110,263	19.9% 
+262	Manchester	New Hampshire	110,229	2.7% 
+263	Murrieta	California	109,830	112.0% 
+264	Centennial	Colorado	109,741	7.1% 
+265	Richmond	California	109,708	10.1% 
+266	San Buenaventura	California	109,708	8.3% 
+267	Pueblo	Colorado	109,412	7.1% 
+268	Pearland	Texas	108,821	136.2% 
+269	Waterbury	Connecticut	108,802	1.3% 
+270	West Covina	California	108,484	3.0% 
+271	North Charleston	South Carolina	108,304	32.6% 
+272	Everett	Washington	108,010	12.1% 
+273	College Station	Texas	107,889	56.5% 
+274	Palm Bay	Florida	107,888	35.4% 
+275	Pompano Beach	Florida	107,762	7.4% 
+276	Boulder	Colorado	107,349	13.4% 
+277	Norwalk	California	107,140	2.4% 
+278	West Palm Beach	Florida	106,779	28.8% 
+279	Broken Arrow	Oklahoma	106,563	32.0% 
+280	Daly City	California	106,562	2.8% 
+281	Sandy Springs	Georgia	105,330	23.9% 
+282	Burbank	California	105,319	4.8% 
+283	Green Bay	Wisconsin	105,207	2.3% 
+284	Santa Maria	California	105,093	34.6% 
+285	Wichita Falls	Texas	104,710	0.5% 
+286	Lakeland	Florida	104,401	22.7% 
+287	Clovis	California	104,180	49.0% 
+288	Lewisville	Texas	104,039	32.7% 
+289	Tyler	Texas	103,700	22.7% 
+290	El Cajon	California	103,679	9.0% 
+291	San Mateo	California	103,536	11.6% 
+292	Rialto	California	103,132	11.1% 
+293	Davenport	Iowa	102,582	4.4% 
+294	Hillsboro	Oregon	102,347	43.4% 
+295	Las Cruces	New Mexico	101,643	38.0% 
+296	South Bend	Indiana	101,516	-6.3% 
+297	Vista	California	100,890	12.1% 
+298	Greeley	Colorado	100,883	28.7% 
+299	Davie	Florida	100,882	22.7% 
+300	San Angelo	Texas	100,450	13.5% 
+301	Jurupa Valley	California	100,314	
+302	Renton	Washington	100,242	94.7% 
+303	Roanoke	Virginia	99,897	5.3% 
+304	Kenosha	Wisconsin	99,858	9.5% 
+305	Erie	Pennsylvania	99,475	-4.0% 
+306	Albany	New York	98,469	4.1% 
+307	Compton	California	98,462	5.1% 
+308	Tuscaloosa	Alabama	98,332	24.9% 
+309	League City	Texas	98,312	114.3% 
+310	Flint	Michigan	98,310	-21.1% 
+311	Allen	Texas	98,143	117.6% 
+312	Mission Viejo	California	97,156	3.7% 
+313	Vacaville	California	96,803	8.2% 
+314	Lawton	Oklahoma	96,655	4.4% 
+315	Beaverton	Oregon	96,577	20.8% 
+316	South Gate	California	96,401	-0.1% 
+317	Portsmouth	Virginia	96,201	-4.2% 
+318	Sparks	Nevada	96,094	43.6% 
+319	Brockton	Massachusetts	95,314	0.9% 
+320	Dearborn	Michigan	95,171	-2.7% 
+321	Federal Way	Washington	95,171	11.7% 
+322	Lee's Summit	Missouri	95,094	33.9% 
+323	New Bedford	Massachusetts	94,958	1.1% 
+324	Spokane Valley	Washington	94,919	17.3% 
+325	Livonia	Michigan	94,635	-5.9% 
+326	Roswell	Georgia	94,501	15.8% 
+327	Orem	Utah	94,457	11.8% 
+328	Rio Rancho	New Mexico	94,171	78.6% 
+329	Yuma	Arizona	94,139	19.0% 
+330	Lawrence	Kansas	93,917	16.5% 
+331	Yakima	Washington	93,701	12.2% 
+332	Quincy	Massachusetts	93,618	5.9% 
+333	Sandy	Utah	93,613	5.1% 
+334	Hesperia	California	93,295	47.9% 
+335	Carson	California	93,281	3.6% 
+336	Boca Raton	Florida	93,235	12.1% 
+337	Santa Monica	California	93,220	10.4% 
+338	San Marcos	California	92,931	66.3% 
+339	Sunrise	Florida	92,700	7.7% 
+340	Plantation	Florida	92,560	11.4% 
+341	Lynn	Massachusetts	92,457	3.6% 
+342	Miami Beach	Florida	92,312	4.8% 
+343	Westminster	California	92,114	4.3% 
+344	Longmont	Colorado	92,088	27.4% 
+345	Santa Barbara	California	91,842	2.5% 
+346	Redding	California	91,582	12.5% 
+347	Meridian	Idaho	90,739	147.0% 
+348	San Leandro	California	90,712	13.7% 
+349	Greenville	North Carolina	90,597	44.2% 
+350	Chico	California	90,316	17.1% 
+351	Edmond	Oklahoma	90,092	31.4% 
+352	Nampa	Idaho	89,839	64.0% 
+353	Newton	Massachusetts	88,817	6.0% 
+354	Fall River	Massachusetts	88,777	-3.6% 
+355	Carmel	Indiana	88,713	65.6% 
+356	Fishers	Indiana	88,658	127.0% 
+357	Asheville	North Carolina	88,512	21.4% 
+358	Norwalk	Connecticut	88,485	6.5% 
+359	Waukegan	Illinois	88,475	0.1% 
+360	Deltona	Florida	88,474	26.2% 
+361	Hawthorne	California	88,451	5.0% 
+362	Fort Smith	Arkansas	88,194	9.2% 
+363	Suffolk	Virginia	88,161	37.3% 
+364	Sugar Land	Texas	88,156	35.8% 
+365	Livermore	California	88,126	19.1% 
+366	Nashua	New Hampshire	87,970	1.3% 
+367	Reading	Pennsylvania	87,879	8.0% 
+368	Concord	North Carolina	87,696	54.8% 
+369	Indio	California	87,533	73.9% 
+370	Whittier	California	87,438	4.3% 
+371	Kirkland	Washington	87,281	93.8% 
+372	Menifee	California	87,174	103.7% 
+373	Newport Beach	California	87,127	10.2% 
+374	Tracy	California	87,075	50.0% 
+375	Citrus Heights	California	87,056	1.9% 
+376	Bend	Oregon	87,014	65.3% 
+377	Bloomington	Minnesota	86,435	1.5% 
+378	Clifton	New Jersey	86,334	9.1% 
+379	Duluth	Minnesota	86,110	-0.1% 
+380	Champaign	Illinois	86,096	22.1% 
+381	Chino	California	85,595	22.2% 
+382	Alhambra	California	85,551	0.4% 
+383	Ogden	Utah	85,444	10.1% 
+384	Redwood City	California	85,288	13.0% 
+385	Bellingham	Washington	85,146	25.5% 
+386	O'Fallon	Missouri	85,040	67.0% 
+387	Hoover	Alabama	84,848	33.8% 
+388	Danbury	Connecticut	84,657	12.7% 
+389	Edinburg	Texas	84,497	72.6% 
+390	Trenton	New Jersey	84,225	-1.3% 
+391	Santa Fe	New Mexico	84,099	32.8% 
+392	Bloomington	Indiana	84,067	18.2% 
+393	Cicero	Illinois	83,886	-1.8% 
+394	Hemet	California	83,861	41.1% 
+395	Johns Creek	Georgia	83,335	37.4% 
+396	Mission	Texas	83,298	79.3% 
+397	Troy	Michigan	83,280	2.8% 
+398	Buena Park	California	83,270	6.6% 
+399	Palm Coast	Florida	82,893	149.7% 
+400	Fayetteville	Arkansas	82,830	39.4% 
+401	Sioux City	Iowa	82,821	-2.5% 
+402	Lake Forest	California	82,492	8.4% 
+403	Merced	California	82,436	27.5% 
+404	Longview	Texas	82,287	12.8% 
+405	Bryan	Texas	82,118	24.5% 
+406	Westland	Michigan	82,000	-5.4% 
+407	Warwick	Rhode Island	81,699	-4.9% 
+408	Lakewood	California	81,611	2.7% 
+409	Farmington Hills	Michigan	81,330	-0.8% 
+410	Mount Pleasant	South Carolina	81,317	66.3% 
+411	Cranston	Rhode Island	81,073	2.0% 
+412	Largo	Florida	81,000	8.6% 
+413	Avondale	Arizona	80,684	116.5% 
+414	Tustin	California	80,583	19.0% 
+415	Mountain View	California	80,435	13.7% 
+416	Napa	California	80,434	10.3% 
+417	Somerville	Massachusetts	80,318	3.6% 
+418	Lawrence	Massachusetts	80,231	11.1% 
+419	St. George	Utah	80,202	59.8% 
+420	Melbourne	Florida	80,127	9.5% 
+421	Parma	Ohio	79,937	-6.5% 
+422	New Rochelle	New York	79,846	10.4% 
+423	Lynchburg	Virginia	79,812	22.2% 
+424	Medford	Oregon	79,805	20.3% 
+425	Deerfield Beach	Florida	79,768	7.1% 
+426	Pleasanton	California	79,510	23.6% 
+427	Brooklyn Park	Minnesota	79,149	17.1% 
+428	Goodyear	Arizona	79,003	302.3% 
+429	Kennewick	Washington	78,896	32.7% 
+430	Alameda	California	78,630	8.4% 
+431	Bellflower	California	78,441	7.4% 
+432	Chino Hills	California	78,309	16.2% 
+433	Bloomington	Illinois	78,292	19.1% 
+434	Springdale	Arkansas	77,859	62.6% 
+435	Racine	Wisconsin	77,742	-5.0% 
+436	Hammond	Indiana	77,614	-6.2% 
+437	Milpitas	California	77,604	23.4% 
+438	Gary	Indiana	77,156	-24.7% 
+439	Scranton	Pennsylvania	77,118	1.6% 
+440	Baldwin Park	California	77,071	1.4% 
+441	Auburn	Washington	77,006	38.8% 
+442	St. Joseph	Missouri	76,596	3.3% 
+443	Pharr	Texas	76,538	61.5% 
+444	Upland	California	76,443	11.0% 
+445	Folsom	California	76,375	44.8% 
+446	Baytown	Texas	76,335	14.5% 
+447	San Ramon	California	76,134	69.4% 
+448	Camden	New Jersey	76,119	-4.5% 
+449	Lake Charles	Louisiana	76,070	5.8% 
+450	Kalamazoo	Michigan	76,041	-1.2% 
+451	Arlington Heights	Illinois	75,926	-0.7% 
+452	Plymouth	Minnesota	75,907	14.9% 
+453	Evanston	Illinois	75,527	1.8% 
+454	Manteca	California	75,448	49.6% 
+455	Wyoming	Michigan	75,275	8.2% 
+456	Loveland	Colorado	75,182	44.9% 
+457	Perris	California	74,971	106.0% 
+458	Bethlehem	Pennsylvania	74,892	5.0% 
+459	Albany	Georgia	74,843	-2.4% 
+460	Schaumburg	Illinois	74,693	-0.8% 
+461	Gastonia	North Carolina	74,543	10.2% 
+462	Union City	California	74,494	10.4% 
+463	Bolingbrook	Illinois	74,306	30.4% 
+464	Iowa City	Iowa	74,220	18.0% 
+465	Layton	Utah	74,143	25.9% 
+466	Appleton	Wisconsin	74,139	5.3% 
+467	Missouri City	Texas	74,139	38.5% 
+468	Fort Myers	Florida	74,013	42.4% 
+469	Boynton Beach	Florida	73,966	22.0% 
+470	Jonesboro	Arkansas	73,907	32.5% 
+471	Rapid City	South Dakota	73,569	22.5% 
+472	Warner Robins	Georgia	73,490	47.6% 
+473	Rochester Hills	Michigan	73,424	6.4% 
+474	Decatur	Illinois	73,254	-10.5% 
+475	Southfield	Michigan	73,156	-6.5% 
+476	New Britain	Connecticut	72,808	1.7% 
+477	Franklin	Tennessee	72,639	56.6% 
+478	Turlock	California	72,292	26.9% 
+479	Temple	Texas	72,277	30.9% 
+480	Apple Valley	California	72,174	32.1% 
+481	Lynwood	California	71,989	2.9% 
+482	Waukesha	Wisconsin	71,970	9.5% 
+483	Wilmington	Delaware	71,948	-1.0% 
+484	Canton	Ohio	71,885	-11.1% 
+485	Gulfport	Mississippi	71,856	0.5% 
+486	Pawtucket	Rhode Island	71,591	-1.9% 
+487	Lauderhill	Florida	71,579	6.9% 
+488	Rock Hill	South Carolina	71,548	40.9% 
+489	Flower Mound	Texas	71,253	37.6% 
+490	Bismarck	North Dakota	71,167	27.5% 
+491	Lafayette	Indiana	71,111	15.7% 
+492	Passaic	New Jersey	71,085	4.6% 
+493	Redlands	California	71,035	11.0% 
+494	Missoula	Montana	71,022	23.0% 
+495	Rancho Cordova	California	71,017	32.1% 
+496	New Braunfels	Texas	70,543	82.8% 
+497	Flagstaff	Arizona	70,320	32.4% 
+498	Muncie	Indiana	70,087	-1.0% 
+499	Weston	Florida	69,959	37.6% 
+500	Frederick	Maryland	69,479	30.8% 
+501	Pasco	Washington	69,451	104.0% 
+502	Pittsburg	California	69,424	21.4% 
+503	Palatine	Illinois	69,308	4.4% 
+504	North Richland Hills	Texas	69,204	23.6% 
+505	Union City	New Jersey	69,156	3.1% 
+506	Kissimmee	Florida	69,152	40.7% 
+507	Walnut Creek	California	68,910	6.6% 
+508	St. Charles	Missouri	68,796	13.3% 
+509	Mount Vernon	New York	68,628	0.2% 
+510	Conroe	Texas	68,602	76.2% 
+511	Dothan	Alabama	68,567	17.5% 
+512	Waterloo	Iowa	68,460	-0.4% 
+513	Maple Grove	Minnesota	68,385	33.1% 
+514	Redondo Beach	California	68,166	7.3% 
+515	Bossier City	Louisiana	68,094	20.5% 
+516	Yorba Linda	California	67,973	15.0% 
+517	Woodbury	Minnesota	67,855	44.4% 
+518	Eau Claire	Wisconsin	67,778	9.0% 
+519	Davis	California	67,666	14.3% 
+520	Camarillo	California	67,608	17.5% 
+521	Victoria	Texas	67,574	11.6% 
+522	Gaithersburg	Maryland	67,456	27.6% 
+523	Jacksonville	North Carolina	67,357	2.4% 
+524	South San Francisco	California	67,271	10.9% 
+525	St. Cloud	Minnesota	67,109	12.2% 
+526	Kenner	Louisiana	67,091	-4.6% 
+527	Rockville	Maryland	66,980	40.0% 
+528	Jackson	Tennessee	66,975	11.7% 
+529	Yuba City	California	66,941	30.9% 
+530	Portland	Maine	66,881	4.1% 
+531	Palo Alto	California	66,853	14.1% 
+532	Marysville	Washington	66,773	127.6% 
+533	South Jordan	Utah	66,648	124.6% 
+534	Oshkosh	Wisconsin	66,555	5.0% 
+535	North Little Rock	Arkansas	66,504	9.7% 
+536	Homestead	Florida	66,498	108.3% 
+537	Bayonne	New Jersey	66,311	7.2% 
+538	Eagan	Minnesota	66,286	4.0% 
+539	Delray Beach	Florida	66,255	9.8% 
+540	Johnson City	Tennessee	66,027	17.9% 
+541	Cedar Park	Texas	65,945	152.4% 
+542	Laguna Niguel	California	65,806	4.6% 
+543	Harlingen	Texas	65,774	11.8% 
+544	San Clemente	California	65,526	29.6% 
+545	Schenectady	New York	65,305	5.7% 
+546	Broomfield	Colorado	65,065	64.4% 
+547	Ames	Iowa	65,060	27.7% 
+548	Shawnee	Kansas	65,046	33.7% 
+549	Conway	Arkansas	64,980	48.7% 
+550	East Orange	New Jersey	64,949	-6.8% 
+551	Skokie	Illinois	64,821	2.3% 
+552	Daytona Beach	Florida	64,736	1.4% 
+553	Tamarac	Florida	64,681	15.6% 
+554	Youngstown	Ohio	64,628	-20.9% 
+555	Lodi	California	64,596	12.3% 
+556	Greenville	South Carolina	64,579	13.8% 
+557	Mansfield	Texas	64,274	126.1% 
+558	Santa Cruz	California	64,220	14.9% 
+559	Pico Rivera	California	64,218	1.1% 
+560	Madera	California	64,208	47.0% 
+561	Janesville	Wisconsin	64,123	6.1% 
+562	West Des Moines	Iowa	64,113	35.8% 
+563	Montebello	California	63,921	2.7% 
+564	Georgetown	Texas	63,716	122.7% 
+565	Alpharetta	Georgia	63,693	36.6% 
+566	Lorain	Ohio	63,647	-7.3% 
+567	Bowling Green	Kentucky	63,616	28.4% 
+568	Eden Prairie	Minnesota	63,496	14.9% 
+569	Waltham	Massachusetts	63,378	7.0% 
+570	Cheyenne	Wyoming	63,335	18.5% 
+571	Rogers	Arkansas	63,159	58.2% 
+572	Encinitas	California	62,930	8.1% 
+573	Haverhill	Massachusetts	62,765	6.1% 
+574	Jupiter	Florida	62,707	57.2% 
+575	Council Bluffs	Iowa	62,597	7.2% 
+576	Wellington	Florida	62,560	61.1% 
+577	North Miami	Florida	62,435	4.4% 
+578	Hamilton	Ohio	62,407	2.9% 
+579	North Port	Florida	62,345	168.1% 
+580	Tulare	California	62,315	35.8% 
+581	Coon Rapids	Minnesota	62,240	0.8% 
+582	Buckeye	Arizona	62,138	536.8% 
+583	La Habra	California	62,131	4.4% 
+584	Blaine	Minnesota	62,124	36.6% 
+585	Auburn	Alabama	62,059	33.9% 
+586	Lake Elsinore	California	61,981	111.7% 
+587	Taylor	Michigan	61,568	-6.6% 
+588	Burnsville	Minnesota	61,481	1.9% 
+589	Monterey Park	California	61,468	2.1% 
+590	Rocklin	California	61,213	64.3% 
+591	Utica	New York	61,100	1.0% 
+592	Malden	Massachusetts	61,068	8.4% 
+593	National City	California	61,060	12.4% 
+594	Springfield	Oregon	60,870	13.7% 
+595	Terre Haute	Indiana	60,825	2.1% 
+596	Vineland	New Jersey	60,818	8.9% 
+597	San Marcos	Texas	60,684	66.6% 
+598	Lakeville	Minnesota	60,633	39.0% 
+599	West Allis	Wisconsin	60,620	-0.7% 
+600	Redmond	Washington	60,598	32.7% 
+601	Cupertino	California	60,572	15.1% 
+602	Taylorsville	Utah	60,514	2.9% 
+603	Bristol	Connecticut	60,452	0.2% 
+604	Moore	Oklahoma	60,451	46.4% 
+605	Gardena	California	60,447	4.3% 
+606	Petaluma	California	60,438	10.2% 
+607	Grand Junction	Colorado	60,358	32.2% 
+608	Casper	Wyoming	60,285	21.2% 
+609	Rowlett	Texas	60,236	33.5% 
+610	La Mesa	California	60,089	9.6% 
+611	Meriden	Connecticut	59,988	2.9% 
+612	Pontiac	Michigan	59,917	-11.4% 
+613	St. Clair Shores	Michigan	59,903	-4.9% 
+614	Port Orange	Florida	59,866	28.5% 
+615	Lakewood	Washington	59,829	2.4% 
+616	Springfield	Ohio	59,680	-9.4% 
+617	Great Falls	Montana	59,638	4.4% 
+618	Chapel Hill	North Carolina	59,568	24.0% 
+619	Huntington Park	California	59,430	-3.2% 
+620	Lancaster	Pennsylvania	59,339	4.5% 
+621	Coconut Creek	Florida	59,302	34.0% 
+622	Idaho Falls	Idaho	59,184	15.7% 
+623	San Rafael	California	59,162	5.3% 
+624	Noblesville	Indiana	59,093	96.6% 
+625	Marietta	Georgia	59,067	-3.9% 
+626	Owensboro	Kentucky	59,042	8.8% 
+627	Eastvale	California	59,039	
+628	Royal Oak	Michigan	59,008	-1.6% 
+629	Brentwood	California	58,968	138.4% 
+630	Dubuque	Iowa	58,799	1.9% 
+631	Novi	Michigan	58,723	23.6% 
+632	Des Plaines	Illinois	58,677	2.7% 
+633	Orland Park	Illinois	58,619	14.0% 
+634	Bartlett	Tennessee	58,579	32.5% 
+635	Woodland	California	58,567	17.7% 
+636	Lehi	Utah	58,486	197.1% 
+637	White Plains	New York	58,459	9.6% 
+638	Arcadia	California	58,408	9.7% 
+639	Ocala	Florida	58,218	22.4% 
+640	Sanford	Florida	58,111	48.2% 
+641	Bowie	Maryland	58,025	11.0% 
+642	Kokomo	Indiana	57,995	23.6% 
+643	Santee	California	57,787	8.9% 
+644	Dublin	California	57,721	88.3% 
+645	Medford	Massachusetts	57,403	3.1% 
+646	Midwest City	Oklahoma	57,249	5.4% 
+647	Margate	Florida	57,234	6.0% 
+648	Tinley Park	Illinois	57,143	16.0% 
+649	Pflugerville	Texas	57,122	137.4% 
+650	New Brunswick	New Jersey	57,035	18.0% 
+651	Grand Forks	North Dakota	57,011	15.7% 
+652	Fountain Valley	California	56,987	3.5% 
+653	St. Peters	Missouri	56,971	10.6% 
+654	Diamond Bar	California	56,897	0.9% 
+655	Taunton	Massachusetts	56,789	1.1% 
+656	Oak Lawn	Illinois	56,781	2.8% 
+657	Ankeny	Iowa	56,764	105.7% 
+658	Chicopee	Massachusetts	56,741	3.6% 
+659	Berwyn	Illinois	56,368	4.4% 
+660	Manhattan	Kansas	56,308	23.1% 
+661	Smyrna	Georgia	56,146	26.0% 
+662	Dearborn Heights	Michigan	56,145	-3.8% 
+663	Porterville	California	56,058	22.0% 
+664	Doral	Florida	56,035	165.1% 
+665	Hendersonville	Tennessee	56,018	36.4% 
+666	Weymouth Town	Massachusetts	55,957	
+667	Rocky Mount	North Carolina	55,806	-5.1% 
+668	Corvallis	Oregon	55,780	12.8% 
+669	Valdosta	Georgia	55,724	20.7% 
+670	Hanford	California	55,659	32.6% 
+671	Castle Rock	Colorado	55,591	165.6% 
+672	Greenwood	Indiana	55,586	51.3% 
+673	Hempstead	New York	55,547	4.4% 
+674	Novato	California	55,530	16.1% 
+675	Kettering	Ohio	55,525	-3.7% 
+676	Bellevue	Nebraska	55,510	24.6% 
+677	Shoreline	Washington	55,439	4.2% 
+678	Decatur	Alabama	55,437	2.4% 
+679	Paramount	California	55,412	0.0% 
+680	Port Arthur	Texas	55,340	-3.9% 
+681	Anderson	Indiana	55,305	-7.2% 
+682	Sarasota	Florida	55,118	4.9% 
+683	West Haven	Connecticut	54,927	4.8% 
+684	Rosemead	California	54,908	2.4% 
+685	Highland	California	54,854	22.3% 
+686	Mount Prospect	Illinois	54,747	-2.6% 
+687	Colton	California	54,621	13.6% 
+688	Carson City	Nevada	54,521	3.7% 
+689	Pocatello	Idaho	54,441	5.6% 
+690	Bradenton	Florida	54,437	8.7% 
+691	Normal	Illinois	54,373	19.1% 
+692	Richland	Washington	54,248	39.3% 
+693	Euless	Texas	54,219	17.2% 
+694	Blue Springs	Missouri	54,148	11.6% 
+695	Cathedral City	California	53,826	25.2% 
+696	Elyria	Ohio	53,775	-4.0% 
+697	Wheaton	Illinois	53,715	-3.3% 
+698	Commerce City	Colorado	53,696	153.9% 
+699	Hoboken	New Jersey	53,635	38.5% 
+700	Watsonville	California	53,628	15.2% 
+701	Lake Havasu City	Arizona	53,553	26.2% 
+702	Revere	Massachusetts	53,422	12.7% 
+703	West New York	New Jersey	53,366	16.0% 
+704	Yucaipa	California	53,328	28.7% 
+705	Gilroy	California	53,231	27.6% 
+706	Pensacola	Florida	53,193	-5.1% 
+707	Kingsport	Tennessee	53,014	16.8% 
+708	Palm Beach Gardens	Florida	52,923	45.7% 
+709	Delano	California	52,733	32.6% 
+710	West Sacramento	California	52,721	64.4% 
+711	Huntersville	North Carolina	52,704	101.5% 
+712	Perth Amboy	New Jersey	52,682	11.2% 
+713	Southaven	Mississippi	52,589	78.2% 
+714	Harrisonburg	Virginia	52,538	29.9% 
+715	Peabody	Massachusetts	52,504	8.5% 
+716	Placentia	California	52,495	12.4% 
+717	Lenexa	Kansas	52,490	29.9% 
+718	DeSoto	Texas	52,486	38.7% 
+719	Burlington	North Carolina	52,472	14.2% 
+720	Elkhart	Indiana	52,348	-0.5% 
+721	La Crosse	Wisconsin	52,306	0.6% 
+722	Oak Park	Illinois	52,287	-0.4% 
+723	Florissant	Missouri	52,268	-3.0% 
+724	Sammamish	Washington	52,253	50.1% 
+725	Albany	Oregon	52,175	27.0% 
+726	Hoffman Estates	Illinois	52,138	4.9% 
+727	Milford	Connecticut	52,087	2.7% 
+728	Glendora	California	52,009	5.0% 
+729	Brookhaven	Georgia	51,910	
+730	Palm Desert	California	51,869	16.3% 
+731	Joplin	Missouri	51,818	13.5% 
+732	Enid	Oklahoma	51,776	10.3% 
+733	Bonita Springs	Florida	51,704	56.4% 
+734	Caldwell	Idaho	51,686	87.0% 
+735	Minnetonka	Minnesota	51,669	1.0% 
+736	Pinellas Park	Florida	51,617	9.4% 
+737	Battle Creek	Michigan	51,589	-3.3% 
+738	Casa Grande	Arizona	51,460	91.0% 
+739	Grand Island	Nebraska	51,440	18.1% 
+740	Grapevine	Texas	51,404	20.4% 
+741	Kentwood	Michigan	51,357	13.0% 
+742	Tigard	Oregon	51,253	19.7% 
+743	Apple Valley	Minnesota	51,221	11.4% 
+744	Plainfield	New Jersey	51,217	7.0% 
+745	Leesburg	Virginia	51,209	78.3% 
+746	Coral Gables	Florida	51,117	19.6% 
+747	Lakewood	Ohio	50,656	-10.3% 
+748	Burien	Washington	50,467	58.6% 
+749	Logan	Utah	50,371	17.9% 
+750	Olympia	Washington	50,302	16.7% 
+751	Aliso Viejo	California	50,195	25.4% 
+752	Galveston	Texas	50,180	-12.7% 
+753	Poway	California	50,157	3.9% 
+754	Edina	Minnesota	50,138	5.7% 
+755	Cerritos	California	49,975	-3.0% 
+756	Troy	New York	49,906	1.3% 
+757	Charleston	West Virginia	49,736	-6.7% 
+758	Downers Grove	Illinois	49,732	0.1% 
+759	Azusa	California	49,690	10.8% 
+760	Methuen	Massachusetts	49,660	12.9% 
+761	Wilson	North Carolina	49,643	10.1% 
+762	Monroe	Louisiana	49,598	-6.4% 
+763	Parker	Colorado	49,550	100.2% 
+764	La Mirada	California	49,520	5.5% 
+765	Minot	North Dakota	49,450	35.1% 
+766	Saginaw	Michigan	49,347	-19.8% 
+767	Bedford	Texas	49,337	4.4% 
+768	Rancho Santa Margarita	California	49,324	4.8% 
+769	Cypress	California	49,290	5.7% 
+770	Murray	Utah	49,250	8.0% 
+771	Cuyahoga Falls	Ohio	49,146	-0.5% 
+772	Coeur d'Alene	Idaho	49,122	40.6% 
+773	Harrisburg	Pennsylvania	49,081	0.4% 
+774	Covina	California	48,984	4.3% 
+775	Stillwater	Oklahoma	48,967	24.7% 
+776	Niagara Falls	New York	48,916	-11.8% 
+777	Collierville	Tennessee	48,863	48.1% 
+778	Summerville	South Carolina	48,848	72.7% 
+779	Sheboygan	Wisconsin	48,797	-3.8% 
+780	Middletown	Ohio	48,760	-5.5% 
+781	Dunwoody	Georgia	48,733	
+782	Huntington	West Virginia	48,638	-6.0% 
+783	Maricopa	Arizona	48,602	2680.4% 
+784	Roswell	New Mexico	48,544	7.4% 
+785	Cedar Hill	Texas	48,507	48.0% 
+786	East Lansing	Michigan	48,471	4.0% 
+787	Apopka	Florida	48,382	73.9% 
+788	Mishawaka	Indiana	48,261	2.6% 
+789	Portage	Michigan	48,177	7.2% 
+790	St. Louis Park	Minnesota	48,171	9.0% 
+791	Newark	Ohio	47,986	3.5% 
+792	Ceres	California	47,963	37.6% 
+793	Alexandria	Louisiana	47,889	2.9% 
+794	Chesterfield	Missouri	47,864	2.1% 
+795	Salina	Kansas	47,813	4.4% 
+796	Lawrence	Indiana	47,809	22.2% 
+797	Euclid	Ohio	47,676	-9.3% 
+798	Roseville	Michigan	47,637	-0.8% 
+799	Texas City	Texas	47,618	14.0% 
+800	Wauwatosa	Wisconsin	47,614	1.0% 
+801	Twin Falls	Idaho	47,468	35.8% 
+802	Glenview	Illinois	47,446	9.9% 
+803	East Providence	Rhode Island	47,408	-2.7% 
+804	Palm Springs	California	47,371	10.2% 
+805	San Luis Obispo	California	47,339	6.6% 
+806	Madison	Alabama	46,962	57.6% 
+807	Jeffersonville	Indiana	46,960	56.7% 
+808	San Jacinto	California	46,951	96.4% 
+809	Mentor	Ohio	46,901	-6.8% 
+810	Mansfield	Ohio	46,830	-9.4% 
+811	Hattiesburg	Mississippi	46,805	1.5% 
+812	Draper	Utah	46,774	83.3% 
+813	Middletown	Connecticut	46,756	2.3% 
+814	Wylie	Texas	46,708	198.9% 
+815	Columbus	Indiana	46,690	18.7% 
+816	Smyrna	Tennessee	46,607	67.6% 
+817	Charlottesville	Virginia	46,597	16.1% 
+818	Lincoln	California	46,474	295.7% 
+819	Lacey	Washington	46,409	46.4% 
+820	Littleton	Colorado	46,368	14.6% 
+821	Beavercreek	Ohio	46,277	20.5% 
+822	Kannapolis	North Carolina	46,144	23.4% 
+823	Everett	Massachusetts	46,050	20.2% 
+824	Binghamton	New York	46,032	-2.6% 
+825	Elmhurst	Illinois	45,957	6.6% 
+826	Keller	Texas	45,758	63.5% 
+827	Biloxi	Mississippi	45,637	-9.9% 
+828	Apex	North Carolina	45,585	114.6% 
+829	West Lafayette	Indiana	45,550	58.7% 
+830	Titusville	Florida	45,393	10.7% 
+831	Altoona	Pennsylvania	45,344	-8.2% 
+832	Newark	California	45,336	6.2% 
+833	St. Cloud	Florida	45,298	106.2% 
+834	Dublin	Ohio	45,098	42.4% 
+835	Cleveland Heights	Ohio	44,962	-11.2% 
+836	Sayreville	New Jersey	44,920	10.8% 
+837	Cutler Bay	Florida	44,865	48.0% 
+838	Hackensack	New Jersey	44,834	4.6% 
+839	Pine Bluff	Arkansas	44,772	-18.6% 
+840	Strongsville	Ohio	44,668	1.7% 
+841	Coachella	California	44,635	95.2% 
+842	Bentonville	Arkansas	44,499	119.1% 
+843	Fort Pierce	Florida	44,484	10.4% 
+844	Danville	California	44,400	6.3% 
+845	Barnstable Town	Massachusetts	44,331	-7.7% 
+846	Oakland Park	Florida	44,319	5.2% 
+847	Attleboro	Massachusetts	44,284	5.5% 
+848	Blacksburg	Virginia	44,215	10.9% 
+849	Haltom City	Texas	44,206	13.0% 
+850	Lompoc	California	44,164	7.1% 
+851	Urbandale	Iowa	44,062	49.3% 
+852	York	Pennsylvania	43,992	6.6% 
+853	North Miami Beach	Florida	43,971	5.3% 
+854	El Centro	California	43,956	15.2% 
+855	Cleveland	Tennessee	43,898	17.1% 
+856	Beaumont	California	43,811	283.6% 
+857	Lombard	Illinois	43,797	2.7% 
+858	Bountiful	Utah	43,784	5.7% 
+859	North Lauderdale	Florida	43,703	13.2% 
+860	Burleson	Texas	43,625	98.5% 
+861	Ocoee	Florida	43,608	75.7% 
+862	Oro Valley	Arizona	43,565	32.9% 
+863	Bozeman	Montana	43,405	54.5% 
+864	Sierra Vista	Arizona	43,355	14.6% 
+865	Freeport	New York	43,334	-1.0% 
+866	Pittsfield	Massachusetts	43,303	-5.2% 
+867	DeKalb	Illinois	43,211	10.2% 
+868	San Bruno	California	43,185	7.5% 
+869	Jefferson City	Missouri	43,169	6.3% 
+870	Altamonte Springs	Florida	43,159	4.5% 
+871	Bell Gardens	California	43,106	-2.2% 
+872	Morgan Hill	California	42,948	25.7% 
+873	Bothell	Washington	42,939	40.9% 
+874	Fond du Lac	Wisconsin	42,933	1.6% 
+875	Farmington	New Mexico	42,871	11.5% 
+876	Salem	Massachusetts	42,869	5.9% 
+877	Fairfield	Ohio	42,767	1.5% 
+878	Rancho Palos Verdes	California	42,732	3.6% 
+879	Moline	Illinois	42,681	-2.9% 
+880	Concord	New Hampshire	42,620	4.6% 
+881	Rockwall	Texas	42,566	126.0% 
+882	Plainfield	Illinois	42,527	209.3% 
+883	Burlington	Vermont	42,452	6.5% 
+884	Rohnert Park	California	42,407	2.5% 
+885	Urbana	Illinois	42,311	11.7% 
+886	Midland	Michigan	42,200	0.9% 
+887	Prescott Valley	Arizona	42,197	72.7% 
+888	State College	Pennsylvania	42,161	9.8% 
+889	Kearny	New Jersey	42,137	4.0% 
+890	Danville	Virginia	42,082	-12.7% 
+891	Belleville	Illinois	42,034	-0.7% 
+892	Linden	New Jersey	42,021	6.5% 
+893	Moorhead	Minnesota	42,005	29.3% 
+894	Brea	California	41,944	18.0% 
+895	Riverton	Utah	41,900	65.5% 
+896	Prescott	Arizona	41,899	21.9% 
+897	The Colony	Texas	41,779	54.3% 
+898	Manassas	Virginia	41,764	19.7% 
+899	Brentwood	Tennessee	41,763	58.5% 
+900	Westfield	Massachusetts	41,690	4.0% 
+902	Leominster	Massachusetts	41,569	0.2% 
+901	Hutchinson	Kansas	41,569	-0.6% 
+903	Bartlett	Illinois	41,545	12.8% 
+904	Buffalo Grove	Illinois	41,503	-4.0% 
+905	Woonsocket	Rhode Island	41,475	-4.1% 
+906	Edmonds	Washington	41,375	4.6% 
+907	Marana	Arizona	41,315	187.3% 
+908	Shelton	Connecticut	41,296	8.1% 
+909	Cedar Falls	Iowa	41,255	13.9% 
+910	Beverly	Massachusetts	41,186	3.3% 
+911	Coppell	Texas	41,159	12.5% 
+912	Findlay	Ohio	41,149	4.9% 
+913	Campbell	California	41,117	5.6% 
+914	Mankato	Minnesota	41,044	25.9% 
+915	Covington	Kentucky	40,997	-4.6% 
+916	Peachtree Corners	Georgia	40,978	
+917	Ormond Beach	Florida	40,970	12.1% 
+918	Huntsville	Texas	40,938	16.4% 
+919	Sumter	South Carolina	40,816	0.4% 
+920	Quincy	Illinois	40,780	0.2% 
+921	Wilkes-Barre	Pennsylvania	40,780	-5.1% 
+922	La Puente	California	40,745	-0.9% 
+923	Holyoke	Massachusetts	40,684	2.0% 
+924	Sherman	Texas	40,667	15.5% 
+925	Goose Creek	South Carolina	40,633	28.7% 
+926	Maplewood	Minnesota	40,567	14.6% 
+927	Streamwood	Illinois	40,554	10.7% 
+928	Fitchburg	Massachusetts	40,545	3.9% 
+929	Hilton Head Island	South Carolina	40,512	19.2% 
+930	La Quinta	California	40,476	64.6% 
+931	Crystal Lake	Illinois	40,448	5.4% 
+932	Hagerstown	Maryland	40,432	9.9% 
+933	San Gabriel	California	40,424	1.3% 
+934	Hickory	North Carolina	40,374	7.1% 
+936	Winter Garden	Florida	40,356	159.5% 
+935	Carol Stream	Illinois	40,356	-0.3% 
+937	Warren	Ohio	40,245	-16.3% 
+938	Calexico	California	40,053	46.4% 
+939	Florence	Alabama	40,026	10.1% 
+940	Shakopee	Minnesota	39,981	89.6% 
+941	Norwich	Connecticut	39,899	10.4% 
+942	Duncanville	Texas	39,826	10.3% 
+943	New Berlin	Wisconsin	39,825	3.6% 
+944	Marlborough	Massachusetts	39,818	8.7% 
+945	Oakley	California	39,813	54.0% 
+946	Lancaster	Ohio	39,766	11.9% 
+947	Romeoville	Illinois	39,719	79.8% 
+948	Culver City	California	39,717	2.1% 
+949	Greenacres	Florida	39,676	39.0% 
+950	Meridian	Mississippi	39,661	-3.9% 
+951	Puyallup	Washington	39,659	14.8% 
+952	Woburn	Massachusetts	39,555	5.7% 
+953	Bremerton	Washington	39,520	6.1% 
+954	Hallandale Beach	Florida	39,488	14.8% 
+955	Clovis	New Mexico	39,480	21.2% 
+956	Annapolis	Maryland	39,474	9.6% 
+957	Weslaco	Texas	39,474	37.1% 
+958	Cape Girardeau	Missouri	39,462	11.2% 
+959	Bullhead City	Arizona	39,445	16.1% 
+960	Chelsea	Massachusetts	39,398	12.2% 
+961	Grove City	Ohio	39,388	42.4% 
+963	Pacifica	California	39,260	2.2% 
+962	Atlantic City	New Jersey	39,260	-2.9% 
+964	Germantown	Tennessee	39,240	3.8% 
+965	Northglenn	Colorado	39,197	20.8% 
+966	Wausau	Wisconsin	39,094	1.2% 
+967	Hurst	Texas	39,016	7.3% 
+968	Stanton	California	38,872	3.4% 
+969	Lancaster	Texas	38,801	49.2% 
+970	Friendswood	Texas	38,800	32.8% 
+971	Gainesville	Georgia	38,712	47.0% 
+972	Montclair	California	38,690	14.0% 
+973	Rock Island	Illinois	38,620	-2.5% 
+974	Oviedo	Florida	38,551	45.8% 
+975	Carpentersville	Illinois	38,512	23.7% 
+976	Lake Oswego	Oregon	38,496	7.8% 
+977	Muskogee	Oklahoma	38,456	-1.8% 
+978	Hobbs	New Mexico	38,416	34.2% 
+979	Muskegon	Michigan	38,401	-4.1% 
+980	Westerville	Ohio	38,384	8.1% 
+981	Little Elm	Texas	38,341	749.3% 
+982	Hanover Park	Illinois	38,333	0.1% 
+983	Panama City	Florida	38,286	3.9% 
+984	Florence	South Carolina	38,228	21.2% 
+985	Wake Forest	North Carolina	38,199	192.1% 
+986	Huber Heights	Ohio	38,176	-0.1% 
+987	Martinez	California	38,137	6.1% 
+988	Wheeling	Illinois	38,079	4.9% 
+989	Apache Junction	Arizona	38,074	18.6% 
+990	Pleasant Grove	Utah	38,052	61.9% 
+991	Brookfield	Wisconsin	38,025	-1.8% 
+992	Delaware	Ohio	37,995	46.7% 
+993	Roy	Utah	37,964	14.0% 
+994	Valley Stream	New York	37,962	4.4% 
+995	Schertz	Texas	37,938	80.2% 
+996	Spanish Fork	Utah	37,935	82.8% 
+997	Keizer	Oregon	37,895	17.0% 
+998	Leander	Texas	37,889	348.4% 
+999	Lima	Ohio	37,873	-9.3% 
+1000	Spartanburg	South Carolina	37,867	-5.6% 
+1001	Ventura	California
+1002	Jefferson County	Kentucky
+1	Arlington	Virginia
+1	Lynnwood	Washington
+1	Lynwood	Washington
+1	Valencia	California
+1	Springfield	New Jersey
+1	Bedford	Massachusetts
+1	Littleton	Massachusetts
+1	Brooklyn	New York
+1	Dania Beach	Florida
+1	New York City	New York
+1	Burley	Idaho
+1	Herndon	Virginia
+1	Reston	Virginia
+1	Westlake	Ohio
+1	Lexington	Massachusetts
+1	Ft. Lauderdale	Florida
+1	Los Gatos	California
+1	Bethesda	Maryland
+1	Emeryville	California
+1	Hebron	Kentucky
+1	NY	New York
+1	Orange County	California
+1	NYC	New York
+1	Radnor	Pennsylvania
+1	San Carlos	California
+1	Moorestown	New Jersey
+1	Los Altos	California
+1	Tysons Corner	Virginia
+1	Nowhere	Pennsylvania
+1	SLC	Utah
+1	Lake City	Utah
+1	DFW	Texas
+1	Metuchen	New Jersey
+1	Annapolis Junction	Maryland

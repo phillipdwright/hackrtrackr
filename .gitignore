@@ -24,7 +24,7 @@ dave_test*
 # Old data files we are now ignoring
 heroku/
 old_data/
-data/
+test_data/
 test_db/
 old_logos/
 
