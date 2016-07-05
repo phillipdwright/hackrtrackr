@@ -473,4 +473,5 @@ def main_update():
     logging.info('#################### Ending main_update ####################')
     db.close()
     
-main_update()
+if __name__ == "__main__":
+    main_update()

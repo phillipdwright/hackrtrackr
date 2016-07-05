@@ -147,7 +147,7 @@ def get_date_list(date):
     Returns list of dates (YYYY-MM-DD) up to most recent month
     '''
     end_date = datetime.date.today().replace(day=1)
-    end_date = datetime.date(2016,7,1) # don't want july showing up in plot
+    #end_date = datetime.date(2016,7,1) # don't want july showing up in plot
     date_list = []
     while date <= end_date:
         date_list.append(date)
