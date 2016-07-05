@@ -19,7 +19,6 @@ app = Flask(__name__)
 
 # Configure the app
 app.debug = settings.DEBUG
-app.config['SECRET_KEY'] = settings.SECRET_KEY
 app.config['DATABASE'] = (0, settings.DATABASE_NAME)
 
 # Make a custom logger so we don't log every GET request

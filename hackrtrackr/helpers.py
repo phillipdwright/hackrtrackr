@@ -63,7 +63,8 @@ EXCLUDE_LIST = [
     12016831,
     12018381,
     12019415,
-    12023654
+    12023654,
+    12023852
     ]
 
 KEYWORD_VARIANTS = [
@@ -277,7 +278,7 @@ def keyword_counts(keyword, prefix_suffix_flag=True, case_flag=False):
     Used to get counts for how many comments had a hit to this keyword
     * Right now checks against html just so it is faster...
     '''
-    if keyword[0] in ('+','-'):
+    if keyword and keyword[0] in ('+','-'):
         keyword = keyword[1:]
     sql_command = 'SELECT thread_date, text FROM posts'
     cursor = g.db.execute(sql_command)
@@ -408,7 +409,20 @@ def get_matching_comments(keywords, user_location):
         reverse=reverse
     )
     
-    return matching_comments    
+    return matching_comments 
+    
+def _get_pure_text(text):
+    '''
+    given: comment['text']
+    return the pure_text
+    doing this because our original pure_text method was combining two lines together
+    '''
+    soup = BeautifulSoup(text, "html.parser")
+    pure_text = ''
+    for pos, i in enumerate(soup.findAll('p')):
+        pure_text += ' '.join(i.findAll(text=True)) + ' '
+    return pure_text
+    
     
 def get_matching_comments_2(keywords, user_location):
     '''
@@ -431,11 +445,13 @@ def get_matching_comments_2(keywords, user_location):
     and_patterns = []
     not_patterns = []
     or_patterns = []
+    patterns_in_order = [] # did this so they stay in same order to match color on plot
     for keyword in keywords:
         if keyword[0] == '+':
             keyword = keyword[1:]
             keyword_regex = get_keyword_regex(keyword)
             and_patterns.append(keyword_regex)
+            patterns_in_order.append(keyword_regex)
         elif keyword[0] == '-':
             keyword = keyword[1:]
             keyword_regex = get_keyword_regex(keyword)
@@ -443,14 +459,20 @@ def get_matching_comments_2(keywords, user_location):
         else:
             keyword_regex = get_keyword_regex(keyword)
             or_patterns.append(keyword_regex)
+            patterns_in_order.append(keyword_regex)
     
     for comment_list in recent_comments:
+
         comment = {name:value for name,value in zip(posts_names,comment_list)}
+
+            
         if comment['id'] in EXCLUDE_LIST:
             continue
         
+        #comment['pure_text'] = BeautifulSoup(comment['text'], 'html.parser').get_text()
+        comment['pure_text'] = _get_pure_text(comment['text'])
+
         if keywords: # if no keywords just skip all this, we want to keep all comments
-            comment['pure_text'] = BeautifulSoup(comment['text'], 'html.parser').get_text()
             
             continue_flag = False
             for pattern in not_patterns:
@@ -477,10 +499,9 @@ def get_matching_comments_2(keywords, user_location):
                 if continue_flag:
                     continue
             
-        
         # if we got here it means it is a keeper!
         
-        comment, total_keywords_found = _keyword_check(comment, and_patterns + or_patterns)
+        comment, total_keywords_found = _keyword_check(comment, patterns_in_order)
         
         # check whether remote or not
         remote = False
@@ -679,7 +700,7 @@ def _keyword_check(comment, patterns):
     
     total_keywords_found = 0
     marked_text = comment['text'] # used to add the keyword highlighting
-    
+
     for pattern, color in zip(patterns, HEX_COLORS):
         keyword_found = False
         start_ends = [] # store the position of each keyword match
@@ -697,8 +718,6 @@ def _keyword_check(comment, patterns):
             # Phil's very clever solution to avoid marking inside <a href> tags!
             previous_text = marked_text[:start].split()
             if previous_text and previous_text[-1].startswith('href'):
-                # if comment['id'] == 12018993:
-                #     print 'got here'
                 continue
 
             # regex picks up 1 char on both sides so adjust for that
@@ -729,7 +748,7 @@ def _get_distance(id_, user_latlng):
         return 25000
 
     user_latlng = tuple(float(i) for i in user_latlng)
-    #print user_latlng, type(user_latlng[0]), type(user_latlng[1])
+    
     sql_command = 'SELECT lat, lng FROM id_geocode WHERE id == ?'
     cursor = g.db.execute(sql_command, (id_,))
     locations_names = [description[0] for description in cursor.description]
@@ -738,7 +757,6 @@ def _get_distance(id_, user_latlng):
     
     closest_distance = 25000
     for job_latlng in locations:
-        #print job_latlng, type(job_latlng[0]), type(job_latlng[1])
         distance = vincenty.vincenty(user_latlng, job_latlng, miles=True)
         if distance < closest_distance:
             closest_distance = distance

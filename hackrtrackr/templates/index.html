@@ -156,6 +156,10 @@
                 
                 {% else %}
                 
+                <div class="col-lg-12 text-center">
+                    <p class="text-muted">{{jobs|length}} jobs were found{% if keywords != 'All' %} matching keyword{% if keywords|length > 1 %}s{% endif %} {{keywords}}{% endif %}</p>
+                </div>
+                
                 {% for job in jobs %}
                 <div class="col-lg-3 col-md-6 text-center">
                     <!--<div class="service-box" style="min-height: 118px;">-->
@@ -221,6 +225,10 @@
                     </div>
                 </div>
                 {% endfor %}
+                
+                <div class="col-lg-12 text-center">
+                    <a href="#page-top" class="btn btn-primary btn-xl page-scroll">Search Again</a>
+                </div>
                 
                 {% endif %}
             </div>
