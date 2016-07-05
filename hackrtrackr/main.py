@@ -8,7 +8,8 @@ from bokeh.plotting import figure
 from bokeh.resources import INLINE
 from bokeh.util.string import encode_utf8
 
-from hackrtrackr.helpers import COLORS, get_matching_comments, make_fig
+from hackrtrackr.helpers import COLORS, get_matching_comments, make_fig,\
+    get_matching_comments_2
 # from helpers import COLORS, get_matching_comments, make_fig
 from hackrtrackr import settings
 import logging
@@ -21,9 +22,17 @@ app.debug = settings.DEBUG
 app.config['SECRET_KEY'] = settings.SECRET_KEY
 app.config['DATABASE'] = (0, settings.DATABASE_NAME)
 
-LOGGING_FORMAT = "%(asctime)s %(levelname)s %(module)s: %(message)s"
+# Make a custom logger so we don't log every GET request
+logger = logging.getLogger('hn_logger')
+logger.setLevel(logging.DEBUG)
+fh = logging.FileHandler('queries.log')
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s %(levelname)s %(module)s: %(message)s")
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+#LOGGING_FORMAT = "%(asctime)s %(levelname)s %(module)s: %(message)s"
 # set to warning to avoid all the _internal logs about eac
-logging.basicConfig(format=LOGGING_FORMAT, filename='queries.log', level=logging.WARNING)
+#logging.basicConfig(format=LOGGING_FORMAT, filename='queries.log', level=logging.WARNING)
 
 def connect_db(db_name):
     # Connect to the database
@@ -39,13 +48,14 @@ def index():
     if request.method == 'POST':
         # Get the entered keywords
         keywords = request.form["keywords"]
-        keywords = [keyword.strip() for keyword in keywords.split(',') if len(keyword) > 0]
+        #keywords = [keyword.strip() for keyword in keywords.split(',') if len(keyword) > 0]
+        keywords = [keyword.strip() for keyword in keywords.split(',') if len(keyword.strip()) > 0]
         keywords = keywords[:len(COLORS)] # prevent too many keywords
         
         # Get the location data
         user_location = (request.form['latitude'], request.form['longitude'])
 
-        logging.info('{} | {}'.format(user_location, keywords))
+        logger.info('{} | {}'.format(user_location, keywords))
 
         fig = make_fig(keywords)
         
@@ -56,7 +66,7 @@ def index():
         script, div = components(fig, INLINE)
         
         # Get recent comments matching the keywords
-        recent_comments = get_matching_comments(keywords, user_location)
+        recent_comments = get_matching_comments_2(keywords, user_location)
         
         # special case if no keywords entered - show 'All' comment counts
         if not keywords:
