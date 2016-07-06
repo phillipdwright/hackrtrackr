@@ -54,7 +54,7 @@ def index():
         # Get the location data
         user_location = (request.form['latitude'], request.form['longitude'])
 
-        logger.info('{} | {}'.format(user_location, keywords))
+        logger.info(', '.join(keyword for keyword in keywords))
 
         fig = make_fig(keywords)
         
