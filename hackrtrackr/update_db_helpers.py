@@ -105,7 +105,7 @@ def guess_company(comment):
     first_line = 'Comment has no text!'
     for soup_line in soup.findAll('p'):
         text_line = ' '.join(soup_line.findAll(text=True))
-        print text_line
+        #print text_line
         if re.search('\w',text_line):
             first_line = text_line
             break
