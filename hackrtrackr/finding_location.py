@@ -475,12 +475,15 @@ def check_line_for_location(line):
     line, found_locs = check_countries_regex(line)
     if found_locs:
         locs += found_locs
-    line, found_locs = check_city_name(line)
-    if found_locs:
-        locs += found_locs
+    
     line, found_locs = check_city_state(line)
     if found_locs:
         locs += found_locs
+        
+    line, found_locs = check_city_name(line)
+    if found_locs:
+        locs += found_locs
+
     
     if not locs:
         line, found_locs = check_state_only(line)
@@ -506,12 +509,15 @@ def check_comment_for_location(comment):
         line, found_locs = check_countries_regex(line)
         if found_locs:
             locs += found_locs
-        line, found_locs = check_city_name(line)
-        if found_locs:
-            locs += found_locs
+            
         line, found_locs = check_city_state(line)
         if found_locs:
             locs += found_locs
+            
+        line, found_locs = check_city_name(line)
+        if found_locs:
+            locs += found_locs
+        
         
         if not locs:
             line, found_locs = check_state_only(line)
@@ -556,18 +562,22 @@ def check_locations(json_file):
                 if found_locs:
                     #print 'a'
                     locs += found_locs
+                    
                 line, found_locs = check_countries_regex(line)
                 if found_locs:
                     #print 'b'
                     locs += found_locs
-                line, found_locs = check_city_name(line)
-                if found_locs:
-                    #print 'c'
-                    locs += found_locs
+                    
                 line, found_locs = check_city_state(line)
                 if found_locs:
                     #print 'd'
                     locs += found_locs
+                    
+                line, found_locs = check_city_name(line)
+                if found_locs:
+                    #print 'c'
+                    locs += found_locs
+
                 
                 if not locs:
                     line, found_locs = check_state_only(line)
