@@ -109,20 +109,45 @@ def guess_company(comment):
     if '|' not in first_line and '-' not in first_line:
         return None
     
-    delimeters = re.compile('[|-]')
-    sections = delimeters.split(first_line)
+    # if there are | then we will split by those
+    # if there is no | but - then we will split by those
+    # the issue is sometimes - are hyphens and not delimeters...
+    
+    if '|' in first_line:
+        delimeter = re.compile('|')
+    else:
+        delimeter = re.compile('-')
+    sections = delimeter.split(first_line)
     
     job_descriptors = re.compile('(^|\W)(Engineer|Senior|Developer|Onsite|Fulltime|Backend|Product Designer)($|\W)', re.IGNORECASE)
-    opener = re.compile('[\w \.]+')
+    opener = re.compile('[\w \.-]+')
     company_guess = None
     for section in sections:
+        #print 'checking section', section
+        
+        # this idea is we don't want the section for a company guess if it 
+        # is really a location. However, we can't just check if part of the section
+        # matches a location because there are companies like 'The New York Times'
+        # So my way was to see if a section completely matches a location and 
+        # if so skip it
+        # However if the first section was like San Francisco and New York the
+        # and would still pop up as the company... I guess you could say if there
+        # are multiple locations found skip it... but then there are cased like
+        # The Los Angeles Angels of Anaheim... 
+        loc_line, possible_locs = check_line_for_location(section)
+        if len(loc_line.strip()) == 0:
+            continue
+        #elif possible_locs and len(possible_locs) > 1:
+        #    continue
+        elif job_descriptors.search(section):
+            continue
         
         m = opener.match(section) # match to make it be start of section
         if m:
             company_guess = m.group().strip()
     
             loc_line, possible_locs = check_line_for_location(company_guess)
-        
+            #print 'loc line = ',loc_line
             # ignore if it completely matches a location
             # loc_line has location replaced with spaces, so use strip to 
             # see if it is all spaces

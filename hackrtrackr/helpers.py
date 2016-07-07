@@ -576,6 +576,11 @@ def get_matching_comments_2(keywords, user_location):
         key = lambda comment: comment['comment_date']
         reverse = True
     
+    # dave just adding this to force sort by date so I can check if the new
+    # annotations are working or not...    
+    key = lambda comment: comment['comment_date']
+    reverse = True
+    
     # Sort the matching comments starting with most recent and return the list
     matching_comments = sorted(
         matching_comments,

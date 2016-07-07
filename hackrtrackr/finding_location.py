@@ -443,7 +443,8 @@ def check_city_name(line):
         'Pasadena':['Pasadena'],
         'Austin':['Austin'],
         'The Hague':['The Hague'],
-        'Buenos Aires':['Buenos Aires']
+        'Buenos Aires':['Buenos Aires'],
+        'New Orleans':['New Orleans']
     }
     for city in cities_to_try:
         for alias in cities_to_try[city]:
@@ -470,6 +471,7 @@ def check_line_for_location(line):
     '''
     locs = []
     line, found_locs = check_city_st_2(line)
+    #print 'line after check_city_st_2', line
     if found_locs:
         locs += found_locs
     line, found_locs = check_countries_regex(line)
@@ -719,3 +721,4 @@ def check_locations(json_file):
             
 #geocode_locs('id_locations.json')
 #check_locations('July_2016_comments.json')
+
