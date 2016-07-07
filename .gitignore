@@ -34,3 +34,8 @@ test*.db
 # Log files
 *.log
 
+#WIP test file
+.ht_test.py
+
+# Renamed db so it wont be added to github
+renamed_hackrtrackr.db

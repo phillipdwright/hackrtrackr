@@ -112,7 +112,7 @@ def guess_company(comment):
     delimeters = re.compile('[|-]')
     sections = delimeters.split(first_line)
     
-    job_descriptors = re.compile('(^|\W)(Engineer|Senior|Developer|Onsite|Fulltime|Backend)($|\W)', re.IGNORECASE)
+    job_descriptors = re.compile('(^|\W)(Engineer|Senior|Developer|Onsite|Fulltime|Backend|Product Designer)($|\W)', re.IGNORECASE)
     opener = re.compile('[\w \.]+')
     company_guess = None
     for section in sections:

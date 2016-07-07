@@ -474,6 +474,15 @@ def get_matching_comments_2(keywords, user_location):
 
         if keywords: # if no keywords just skip all this, we want to keep all comments
             
+            if any(pattern.search(comment['pure_text']) for pattern in not_patterns):
+                continue
+            
+            if not all(pattern.search(comment['pure_text']) for pattern in and_patterns):
+                continue
+            
+            if or_patterns and not any(pattern.search(comment['pure_text']) for pattern in or_patterns):
+                continue
+            '''
             continue_flag = False
             for pattern in not_patterns:
                 if pattern.search(comment['pure_text']):
@@ -486,6 +495,7 @@ def get_matching_comments_2(keywords, user_location):
             for pattern in and_patterns:
                 if not pattern.search(comment['pure_text']):
                     continue_flag = True
+                    break
             if continue_flag:
                 continue
             
@@ -498,7 +508,7 @@ def get_matching_comments_2(keywords, user_location):
                         break
                 if continue_flag:
                     continue
-            
+            '''
         # if we got here it means it is a keeper!
         
         comment, total_keywords_found = _keyword_check(comment, patterns_in_order)
