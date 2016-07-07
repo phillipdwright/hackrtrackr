@@ -100,8 +100,15 @@ def guess_company(comment):
 
     soup = BeautifulSoup(comment['text'], "html.parser") 
         
-    first_line = soup.findAll('p')[0]
-    first_line = ' '.join(first_line.findAll(text=True))
+    # first_line = soup.findAll('p')[0]
+    # first_line = ' '.join(first_line.findAll(text=True))
+    first_line = 'Comment has no text!'
+    for soup_line in soup.findAll('p'):
+        text_line = ' '.join(soup_line.findAll(text=True))
+        print text_line
+        if re.search('\w',text_line):
+            first_line = text_line
+            break
     
     if not first_line:
         return None
@@ -124,7 +131,7 @@ def guess_company(comment):
 
     company_guess = None
     for section in sections:
-        print 'section: ',section
+        #print 'section: ',section
         #print 'checking section', section
         
         # this idea is we don't want the section for a company guess if it 
