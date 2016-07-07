@@ -39,3 +39,4 @@ test*.db
 
 # Renamed db so it wont be added to github
 renamed_hackrtrackr.db
+*.db
