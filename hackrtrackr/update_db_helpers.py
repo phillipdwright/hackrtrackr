@@ -19,6 +19,7 @@ from dbutils.setup_db import posts, company, id_geocode
 #from db_config import update_table
 from hackrtrackr import settings
 
+# following should probably not be used... but maybe it's okay
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -105,7 +106,7 @@ def guess_company(comment):
     first_line = 'Comment has no text!'
     for soup_line in soup.findAll('p'):
         text_line = ' '.join(soup_line.findAll(text=True))
-        #print text_line
+
         if re.search('\w',text_line):
             first_line = text_line
             break
@@ -113,17 +114,17 @@ def guess_company(comment):
     if not first_line:
         return None
     
-    if '|' not in first_line and '-' not in first_line:
+    # added spaces around - to avoid hyphenated words    
+    if '|' not in first_line and ' - ' not in first_line:
         return None
     
-    # if there are | then we will split by those
-    # if there is no | but - then we will split by those
-    # the issue is sometimes - are hyphens and not delimeters...
+    # first choice for delimiter is |
+    # if not then try hyphen with spaces around it - this is used less often
     
     if '|' in first_line:
         delimeter = re.compile('\|')
     else:
-        delimeter = re.compile('-')
+        delimeter = re.compile(' - ')
     sections = delimeter.split(first_line)
     
     job_descriptors = re.compile('(^|\W)(Engineer|Senior|Developer|Onsite|Fulltime|Backend|Product Designer|Full Time)($|\W)', re.IGNORECASE)
@@ -131,8 +132,6 @@ def guess_company(comment):
 
     company_guess = None
     for section in sections:
-        print 'section: ',section
-        #print 'checking section', section
         
         # this idea is we don't want the section for a company guess if it 
         # is really a location. However, we can't just check if part of the section
