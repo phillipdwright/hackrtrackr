@@ -19,7 +19,6 @@ from hackrtrackr import settings
 # import logging
 # log = logging.getLogger(__name__)
 
-
 # unicode errors with city names so used this SO answer:
 # http://stackoverflow.com/questions/31137552/unicodeencodeerror-ascii-codec-cant-encode-character-at-special-name
 import sys
@@ -147,13 +146,10 @@ def get_date_list(date):
     Returns list of dates (YYYY-MM-DD) up to most recent month
     '''
     end_date = datetime.date.today().replace(day=1)
-    #end_date = datetime.date(2016,7,1) # don't want july showing up in plot
     date_list = []
     while date <= end_date:
         date_list.append(date)
         date += datetime.timedelta(days=calendar.monthrange(date.year, date.month)[1])
-        #date += datetime.timedelta(days=32)
-        #date = date.replace(day=1)
     return date_list
     
 DATE_LIST = get_date_list(datetime.date(2011,4,1))
@@ -233,6 +229,8 @@ def make_fig(keywords):
     also deals with special case of no keywords to get total posts
     returns: fig
     '''
+    and_or_keywords = [keyword for keyword in keywords if keyword[0] != '-']
+    
     fig = figure(
             x_axis_type = "datetime",
             # responsive = True, # old responsive version, did not scale
@@ -273,7 +271,7 @@ def number_comments_per_month(comments):
         counts[index] += 1
     return counts
     
-def keyword_counts(keyword, prefix_suffix_flag=True, case_flag=False):
+def keyword_counts(keyword):
     '''
     Used to get counts for how many comments had a hit to this keyword
     * Right now checks against html just so it is faster...
@@ -287,15 +285,6 @@ def keyword_counts(keyword, prefix_suffix_flag=True, case_flag=False):
     counts = np.zeros(len(DATE_LIST))
     total_counts = np.zeros(len(DATE_LIST))
     keyword_regex = get_keyword_regex(keyword)
-    #keyword = re.escape(keyword) # escape special regex characters
-    #print keyword
-    #if prefix_suffix_flag:
-    #    keyword = '(\W|^){}(\W|$)'.format(keyword) # so it can't be part of a larger word
-    
-    #if case_flag:
-    #    p = re.compile(keyword)
-    #else:
-    #    p = re.compile(keyword, re.IGNORECASE)
         
     for comment in comments:
         text = comment[1]
@@ -305,111 +294,6 @@ def keyword_counts(keyword, prefix_suffix_flag=True, case_flag=False):
             counts[index] += 1
         total_counts[index] += 1
     return total_counts, counts
- 
-def get_matching_comments(keywords, user_location):
-    # Build a list of all comments posted from current month
-    current_month = datetime.date.today().replace(day=1)
-    #current_month = datetime.date(2016,7,1).isoformat() # take this out if auto-update is working
-    
-    sql_command = 'SELECT * FROM posts WHERE thread_date == ?'
-    cursor = g.db.execute(sql_command, (current_month,))
-    posts_names = [description[0] for description in cursor.description]
-    recent_comments = cursor.fetchall()
-
-    # Build a list of recent comments that match the keywords
-    matching_comments = []
-        
-    # compile patterns for each keyword
-    patterns = []
-    for keyword in keywords:
-        keyword_regex = get_keyword_regex(keyword)
-        #keyword = re.escape(keyword)
-        #keyword = '(\W|^){}(\W|$)'.format(keyword)
-        #p = re.compile(keyword, re.IGNORECASE)
-        patterns.append(keyword_regex)
-    
-    for comment_list in recent_comments:
-        comment = {name:value for name,value in zip(posts_names,comment_list)}
-        if comment['id'] in EXCLUDE_LIST:
-            continue
-        comment['pure_text'] = BeautifulSoup(comment['text'], 'html.parser').get_text()
-        comment, total_keywords_found = _keyword_check(comment, patterns)
-        
-        # Verify that all keywords are found in the comment 
-        # (bug/feature - also works for 0 keywords)
-        if total_keywords_found == len(keywords):
-        
-            # check whether remote or not
-            remote = False
-            p = re.compile('(\W|^)(?<!no )(remote)(\W|$)', re.IGNORECASE)
-            if p.search(comment['pure_text']):
-                remote = True
-                comment['distance'] = 0
-            else:
-                comment['distance'] = _get_distance(comment['id'], user_location)
-        
-            location = _get_location(comment['id'], remote)
-            
-            if location:
-                comment['location'] = location
-                
-            #comment['distance'] = _get_distance(comment['id'], user_location)
-            
-            # If company name is None then just grab the first part of the text
-            if comment['company'] is None or comment['company'] == '':
-                company_snippet = comment['pure_text'][:25] + '..'
-            else:
-                company_snippet = comment['company']
-            comment['snippet'] = ' | '.join(i for i in (company_snippet, location) if i)
-            
-            if remote:
-                comment['snippet'] += '<br>REMOTE'
-            
-            if comment['glassdoor_id']:
-                # I need to fix the database so only the ones we have logos
-                # for will have a squareLogo entry ***
-                # Set logo from Glassdoor
-                filename = LOGO_FILE.format(comment['glassdoor_id'])
-                if os.path.isfile(filename):
-                    comment['logo'] = LOGO_IMG.format(comment['glassdoor_id'])
-                else:
-                    comment['logo'] = HN_LOGO
-                
-                # Set url from Glassdoor
-                comment['glassdoor_url'] = GD_BASE.format(comment['glassdoor_id'])
-                
-                # Get rating from Glassdoor
-                comment['rating'] = _get_rating(comment)
-                if not comment['rating']:
-                    del comment['rating']
-                    
-                # Industry
-                comment['industry'] = _get_industry(comment)
-                if not comment['industry']:
-                    del comment['industry']
-                    
-            else:
-                # Use the generic HN logo if there is no Glassdoor match
-                comment['logo'] = HN_LOGO
-            
-            # Append the comment to the matching comments list
-            matching_comments.append(comment)
-    
-    if all(user_location):
-        key = lambda comment: (comment['distance'], comment['comment_date'])
-        reverse = False
-    else:
-        key = lambda comment: comment['comment_date']
-        reverse = True
-    
-    # Sort the matching comments starting with most recent and return the list
-    matching_comments = sorted(
-        matching_comments,
-        key=key,
-        reverse=reverse
-    )
-    
-    return matching_comments 
     
 def _get_pure_text(text):
     '''
@@ -423,8 +307,7 @@ def _get_pure_text(text):
         pure_text += ' '.join(i.findAll(text=True)) + ' '
     return pure_text
     
-    
-def get_matching_comments_2(keywords, user_location):
+def get_matching_comments(keywords, user_location):
     '''
     +keywords = AND must be present for match
     -keywords = NOT must be absent for match
@@ -465,11 +348,9 @@ def get_matching_comments_2(keywords, user_location):
 
         comment = {name:value for name,value in zip(posts_names,comment_list)}
 
-            
         if comment['id'] in EXCLUDE_LIST:
             continue
         
-        #comment['pure_text'] = BeautifulSoup(comment['text'], 'html.parser').get_text()
         comment['pure_text'] = _get_pure_text(comment['text'])
 
         if keywords: # if no keywords just skip all this, we want to keep all comments
@@ -482,33 +363,7 @@ def get_matching_comments_2(keywords, user_location):
             
             if or_patterns and not any(pattern.search(comment['pure_text']) for pattern in or_patterns):
                 continue
-            '''
-            continue_flag = False
-            for pattern in not_patterns:
-                if pattern.search(comment['pure_text']):
-                    # go on to next comment
-                    continue_flag = True
-                    break
-            if continue_flag:
-                continue
-                
-            for pattern in and_patterns:
-                if not pattern.search(comment['pure_text']):
-                    continue_flag = True
-                    break
-            if continue_flag:
-                continue
-            
-            if or_patterns:
-                continue_flag = True
-                for pattern in or_patterns:
-                    if pattern.search(comment['pure_text']):
-                        continue_flag = False
-                        # we only need one OR so we can stop now
-                        break
-                if continue_flag:
-                    continue
-            '''
+
         # if we got here it means it is a keeper!
         
         comment, total_keywords_found = _keyword_check(comment, patterns_in_order)

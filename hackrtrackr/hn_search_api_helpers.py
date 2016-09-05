@@ -192,6 +192,27 @@ def convert_iso_8601_to_datetime(s):
     dt = dateutil.parser.parse(s)
     return dt.date()
     
+def get_single_comment(comment_id):
+    '''
+    given: a hacker news comment ID
+    returns: comment as dict with id, thread_id, thread_date, comment_date, text
+    '''
+    comment_url = 'http://hn.algolia.com/api/v1/items/{}'.format(comment_id)
+    comment = call_api(comment_url)
+    
+    # also get the thread for the thread date (although we assume it will be 1st of month)
+    thread_id = comment['parent_id']
+    thread_url = 'http://hn.algolia.com/api/v1/items/{}'.format(thread_id)
+    thread = call_api(comment_url)
+    thread_date = convert_iso_8601_to_datetime(thread['created_at'])
+    
+    comment_date = convert_iso_8601_to_datetime(comment['created_at'])
+    comment_dict = dict(id = comment['id'], thread_id = thread_id,
+                    text = comment['text'], thread_date = thread_date,
+                    comment_date = comment_date)
+    return comment_dict
+    
+    
 def get_comments_from_thread(thread):
     '''
     given: thread for a particular month

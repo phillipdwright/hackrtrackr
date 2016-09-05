@@ -1,6 +1,6 @@
 import sqlite3
 from hn_search_api_helpers import get_thread_data_by_user, \
-get_comments_from_thread, call_api
+get_comments_from_thread, call_api, get_single_comment
 from settings import DATABASE_NAME
 import datetime
 import re
@@ -13,6 +13,7 @@ import logging
 from operator import itemgetter
 import os
 import requests
+from helpers import _get_pure_text
 
 from dbutils.db_config import update_table
 from dbutils.setup_db import posts, company, id_geocode
@@ -506,5 +507,72 @@ def main_update():
     logging.info('#################### Ending main_update ####################')
     db.close()
     
+def manually_annotate():
+    '''
+    for cases when an automated annotation is incorrect, this function lets
+    you input the company name and locations and will re-write the database 
+    with the new info
+    '''
+    db = sqlite3.connect(DATABASE_FILE)
+    
+    comment_id_str = ''
+    while comment_id_str == '':
+        comment_id_str = raw_input("Enter comment ID ('q' to quit): ")
+        if comment_id_str == 'q':
+            db.close()
+            return
+        
+        if comment_id_str:
+            try:
+                comment_id = int(comment_id_str)
+            except ValueError:
+                print 'ID must be an int'
+                
+    sql_command = 'SELECT company FROM posts WHERE id = ?'
+    cursor = db.execute(sql_command, (comment_id,))
+    current_company = cursor.fetchone()[0]
+    
+    comment = get_single_comment(comment_id)
+    
+    print 'ID: {}'.format(comment_id)
+    print _get_pure_text(comment['text'])
+    print 'Current Company: {}'.format(current_company)
+    
+    new_company = ''
+    while new_company == '':
+        new_company = raw_input("Enter new company ('None' for None-type or 'q' to quit): ")
+        if new_company == 'q':
+            return
+    if new_company == 'None':
+        new_company = None
+        
+    # to do:
+    # get the glass door for the new company
+    # get location for new locations
+    
+    # remove the old posts row and all the locations rows
+    # add the new data
+    # and log it
+        
+    # glassdoor_id = None
+    # if new_company:
+    #     comment_urls = get_urls(url_regex, comment)
+    #     glassdoor_id = search_glassdoor(db, company_guess, comment_urls, stringency_flag = True)
+    # else:
+    #     logging.info('No guess made for company name')    
+    
+    # sql_command = 'SELECT city FROM id_geocode WHERE id = ?'
+    # cursor = db.execute(sql_command, (comment_id,))
+    # current_cities = cursor.fetchall()
+    
+    
+    # print 'Current Location(s):'
+    # for current_city in current_cities:
+    #     print current_city[0]
+
+    
+        
+    
 if __name__ == "__main__":
-    main_update()
+    manually_annotate()
+    #main_update()

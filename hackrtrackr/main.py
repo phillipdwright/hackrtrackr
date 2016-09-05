@@ -8,8 +8,8 @@ from bokeh.plotting import figure
 from bokeh.resources import INLINE
 from bokeh.util.string import encode_utf8
 
-from hackrtrackr.helpers import COLORS, get_matching_comments, make_fig,\
-    get_matching_comments_2
+from hackrtrackr.helpers import COLORS, get_matching_comments, make_fig
+
 # from helpers import COLORS, get_matching_comments, make_fig
 from hackrtrackr import settings
 import logging
@@ -47,7 +47,6 @@ def index():
     if request.method == 'POST':
         # Get the entered keywords
         keywords = request.form["keywords"]
-        #keywords = [keyword.strip() for keyword in keywords.split(',') if len(keyword) > 0]
         keywords = [keyword.strip() for keyword in keywords.split(',') if len(keyword.strip()) > 0]
         keywords = keywords[:len(COLORS)] # prevent too many keywords
         
@@ -65,7 +64,7 @@ def index():
         script, div = components(fig, INLINE)
         
         # Get recent comments matching the keywords
-        recent_comments = get_matching_comments_2(keywords, user_location)
+        recent_comments = get_matching_comments(keywords, user_location)
         
         # special case if no keywords entered - show 'All' comment counts
         if not keywords:
