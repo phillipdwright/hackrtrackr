@@ -304,14 +304,20 @@ def keyword_counts(keyword):
         text = comment[1]
         date = comment[0]
         try:
+            # Get the index in the date list of this comment
             index = _date_index[string_to_date(date)]
-        except KeyError: # Not a good solution (not functional). Consider writing an update function called on KeyError.
+        except KeyError:
+            # If this comment's month was not part of the date list last time
+            #  the list was built, rebuild the date list and resize the count
+            #  arrays
             global _date_list, _date_index, _date_list_str
             _date_list, _date_index, _date_list_str = build_date_objects()
             
-            # Reset the counts & total_counts values
-            counts = np.zeros(len(_date_list))
-            total_counts = np.zeros(len(_date_list))
+            # Resize the counts & total_counts arrays
+            counts.resize(len(_date_list))
+            total_counts.resize(len(_date_list))
+            
+            # Get the index in the date list of this comment
             index = _date_index[string_to_date(date)]
         if keyword_regex.search(text):
             counts[index] += 1
