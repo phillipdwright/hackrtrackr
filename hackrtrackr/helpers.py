@@ -151,11 +151,22 @@ def get_date_list(date):
         date_list.append(date)
         date += datetime.timedelta(days=calendar.monthrange(date.year, date.month)[1])
     return date_list
-    
-DATE_LIST = get_date_list(datetime.date(2011,4,1))
-# create a dict so we can quickly get the index for each date
-DATE_INDEX = {date:index for index, date in enumerate(DATE_LIST)}
-DATE_LIST_STR = [date.isoformat() for date in DATE_LIST]
+
+def build_date_objects():
+    '''
+    Creates and returns date objects for use in plots
+    '''
+    date_list = get_date_list(datetime.date(2011,4,1))
+    # create a dict so we can quickly get the index for each date
+    date_index = {date:index for index, date in enumerate(date_list)}
+    date_list_str = [date.isoformat() for date in date_list]
+    return date_list, date_index, date_list_str
+
+_date_list, _date_index, _date_list_str = build_date_objects()
+# DATE_LIST = get_date_list(datetime.date(2011,4,1))
+# # create a dict so we can quickly get the index for each date
+# DATE_INDEX = {date:index for index, date in enumerate(DATE_LIST)}
+# DATE_LIST_STR = [date.isoformat() for date in DATE_LIST]
     
 def plot_dots_and_line(fig, keyword, color):   
     '''
@@ -165,16 +176,17 @@ def plot_dots_and_line(fig, keyword, color):
     adds a dot and line plot of counts
     returns: fig
     '''
+    
     total_counts, counts = keyword_counts(keyword)
     if keyword:
         normalized_counts = counts/ total_counts
         
         source = ColumnDataSource(
             data = {
-                'x': DATE_LIST,
+                'x': _date_list,
                 'y': normalized_counts,
-                'keyword': [keyword.title()]*len(DATE_LIST),
-                'dates': DATE_LIST_STR,
+                'keyword': [keyword.title()]*len(_date_list),
+                'dates': _date_list_str,
                 'total_jobs': total_counts,
                 'matching_jobs' : counts
                 }
@@ -191,9 +203,9 @@ def plot_dots_and_line(fig, keyword, color):
         normalized_counts = total_counts
         source = ColumnDataSource(
             data = {
-                'x': DATE_LIST,
+                'x': _date_list,
                 'y': normalized_counts,
-                'dates': DATE_LIST_STR,
+                'dates': _date_list_str,
                 'total_jobs': normalized_counts,
                 }
             )
@@ -213,7 +225,7 @@ def plot_dots_and_line(fig, keyword, color):
     
     #lose the first and last elements due to boundary effect
     fig.line(
-        DATE_LIST[1:-1],
+        _date_list[1:-1],
         counts_avg[1:-1],
         line_width=4,
         color=color,
@@ -264,10 +276,11 @@ def number_comments_per_month(comments):
     '''
     Returns np array of total # of comments per month
     '''
-    counts = np.zeros(len(DATE_LIST))
+    
+    counts = np.zeros(len(_date_list))
     
     for comment in comments:
-        index = DATE_INDEX[comment['thread_date']]
+        index = _date_index[comment['thread_date']]
         counts[index] += 1
     return counts
     
@@ -276,20 +289,30 @@ def keyword_counts(keyword):
     Used to get counts for how many comments had a hit to this keyword
     * Right now checks against html just so it is faster...
     '''
+    
     if keyword and keyword[0] in ('+','-'):
         keyword = keyword[1:]
     sql_command = 'SELECT thread_date, text FROM posts'
     cursor = g.db.execute(sql_command)
     comments = cursor.fetchall()
 
-    counts = np.zeros(len(DATE_LIST))
-    total_counts = np.zeros(len(DATE_LIST))
+    counts = np.zeros(len(_date_list))
+    total_counts = np.zeros(len(_date_list))
     keyword_regex = get_keyword_regex(keyword)
         
     for comment in comments:
         text = comment[1]
         date = comment[0]
-        index = DATE_INDEX[string_to_date(date)]
+        try:
+            index = _date_index[string_to_date(date)]
+        except KeyError: # Not a good solution (not functional). Consider writing an update function called on KeyError.
+            global _date_list, _date_index, _date_list_str
+            _date_list, _date_index, _date_list_str = build_date_objects()
+            
+            # Reset the counts & total_counts values
+            counts = np.zeros(len(_date_list))
+            total_counts = np.zeros(len(_date_list))
+            index = _date_index[string_to_date(date)]
         if keyword_regex.search(text):
             counts[index] += 1
         total_counts[index] += 1
