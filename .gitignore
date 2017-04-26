@@ -9,6 +9,8 @@ settings.py
 venv/
 bokeh-venv/
 venv3/
+env27/
+env36/
 
 # Cloud9 trash
 .~c9*
